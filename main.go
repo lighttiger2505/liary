@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"time"
 
@@ -102,6 +103,21 @@ func run(c *cli.Context) error {
 		return nil
 	}
 
+	// Make diary file
+	if !isFileExist(diaryPath) {
+		err = makeFile(diaryPath)
+		if err != nil {
+			return fmt.Errorf("failed make diary file. %s", err.Error())
+		}
+	}
+
+	// Open text editor
+	err = openEditor("vim", diaryPath)
+	if err != nil {
+		fmt.Fprint(os.Stdout, fmt.Sprintf("failed open text editor. %s\n", err.Error()))
+		return fmt.Errorf("Failed open editor. %s", err.Error())
+	}
+
 	return nil
 }
 
@@ -144,4 +160,29 @@ func dirWalk(dir string) []string {
 	}
 
 	return paths
+}
+
+func makeDir(fPath, message string) error {
+	return nil
+}
+
+func makeFile(fPath string) error {
+	err := ioutil.WriteFile(fPath, []byte(""), 0644)
+	if err != nil {
+		return fmt.Errorf("Failed make file. %v", err.Error())
+	}
+	return nil
+}
+
+func isFileExist(fPath string) bool {
+	_, err := os.Stat(fPath)
+	return err == nil || !os.IsNotExist(err)
+}
+
+func openEditor(program string, args ...string) error {
+	c := exec.Command(program, args...)
+	c.Stdin = os.Stdin
+	c.Stdout = os.Stdout
+	c.Stderr = os.Stderr
+	return c.Run()
 }
