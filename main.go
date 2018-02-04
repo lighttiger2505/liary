@@ -2,8 +2,14 @@ package main
 
 import (
 	"fmt"
-	"github.com/urfave/cli"
+	"io/ioutil"
 	"os"
+	"path/filepath"
+	"strconv"
+	"time"
+
+	"github.com/mitchellh/go-homedir"
+	"github.com/urfave/cli"
 )
 
 const (
@@ -32,7 +38,7 @@ func newApp() *cli.App {
 	app.Author = "lighttiger2505"
 	app.Email = "lighttiger2505@gmail.com"
 	app.Flags = []cli.Flag{
-		cli.IntFlag{
+		cli.StringFlag{
 			Name:  "file, f",
 			Usage: "Specified file",
 		},
@@ -40,7 +46,11 @@ func newApp() *cli.App {
 			Name:  "list, l",
 			Usage: "Show diary file list",
 		},
-		cli.IntFlag{
+		cli.BoolFlag{
+			Name:  "path, p",
+			Usage: "Show diary file path",
+		},
+		cli.StringFlag{
 			Name:  "date, d",
 			Usage: "Specified date",
 		},
@@ -53,9 +63,82 @@ func newApp() *cli.App {
 			Usage: "Specified after diary by day",
 		},
 	}
-	app.Action = func(c *cli.Context) error {
-		fmt.Println("boom! I say!")
+	app.Action = run
+	return app
+}
+
+func run(c *cli.Context) error {
+
+	// Show diary file list
+	list := c.Bool("list")
+	if list {
+		diaryDirPath := diaryDirPath()
+		diaryPaths := dirWalk(diaryDirPath)
+		for _, diaryPath := range diaryPaths {
+			fmt.Println(diaryPath)
+		}
 		return nil
 	}
-	return app
+
+	// Getting time for target diary
+	before := c.Int("before")
+	after := c.Int("after")
+	targetTime := targetTime(before, after)
+
+	// Getting diary path
+	year, month, day := targetTime.Date()
+	diaryPath, err := diaryPath(strconv.Itoa(year), strconv.Itoa(int(month)), strconv.Itoa(day))
+
+	// Show diary file path
+	path := c.Bool("path")
+	if path {
+		if err != nil {
+			return err
+		}
+		fmt.Println(diaryPath)
+		return nil
+	}
+
+	return nil
+}
+
+func diaryDirPath() string {
+	home, _ := homedir.Dir()
+	diaryDirPath := filepath.Join(home, "diary")
+	return diaryDirPath
+}
+
+func diaryPath(year, month, day string) (string, error) {
+	diaryDirPath := diaryDirPath()
+	diaryPath := filepath.Join(diaryDirPath, year, month, fmt.Sprintf("%s.md", day))
+	return diaryPath, nil
+}
+
+func targetTime(before, after int) time.Time {
+	now := time.Now()
+	if before != 0 {
+		return now.AddDate(0, 0, before)
+	}
+	if after != 0 {
+		return now.AddDate(0, 0, -1*after)
+	}
+	return now
+}
+
+func dirWalk(dir string) []string {
+	files, err := ioutil.ReadDir(dir)
+	if err != nil {
+		panic(err)
+	}
+
+	var paths []string
+	for _, file := range files {
+		if file.IsDir() {
+			paths = append(paths, dirWalk(filepath.Join(dir, file.Name()))...)
+			continue
+		}
+		paths = append(paths, filepath.Join(dir, file.Name()))
+	}
+
+	return paths
 }
