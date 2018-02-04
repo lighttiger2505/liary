@@ -96,13 +96,13 @@ func run(c *cli.Context) error {
 		fmt.Sprintf("%02d", int(month)),
 		fmt.Sprintf("%02d", day),
 	)
+	if err != nil {
+		return err
+	}
 
 	// Show diary file path
 	path := c.Bool("path")
 	if path {
-		if err != nil {
-			return err
-		}
 		fmt.Println(diaryPath)
 		return nil
 	}
