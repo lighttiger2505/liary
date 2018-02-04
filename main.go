@@ -5,7 +5,6 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"strconv"
 	"time"
 
 	"github.com/mitchellh/go-homedir"
@@ -87,7 +86,11 @@ func run(c *cli.Context) error {
 
 	// Getting diary path
 	year, month, day := targetTime.Date()
-	diaryPath, err := diaryPath(strconv.Itoa(year), strconv.Itoa(int(month)), strconv.Itoa(day))
+	diaryPath, err := diaryPath(
+		fmt.Sprintf("%02d", year),
+		fmt.Sprintf("%02d", int(month)),
+		fmt.Sprintf("%02d", day),
+	)
 
 	// Show diary file path
 	path := c.Bool("path")
