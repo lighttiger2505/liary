@@ -103,6 +103,14 @@ func run(c *cli.Context) error {
 		return nil
 	}
 
+	// Make directory
+	targetDirPath := filepath.Dir(diaryPath)
+	if !isFileExist(targetDirPath) {
+		if err := os.MkdirAll(targetDirPath, 0755); err != nil {
+			return fmt.Errorf("Failed make diary dir. %s", err.Error())
+		}
+	}
+
 	// Make diary file
 	if !isFileExist(diaryPath) {
 		err = makeFile(diaryPath)
@@ -160,10 +168,6 @@ func dirWalk(dir string) []string {
 	}
 
 	return paths
-}
-
-func makeDir(fPath, message string) error {
-	return nil
 }
 
 func makeFile(fPath string) error {
