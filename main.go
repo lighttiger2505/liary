@@ -113,9 +113,8 @@ func run(c *cli.Context) error {
 
 	// Make diary file
 	if !isFileExist(diaryPath) {
-		err = makeFile(diaryPath)
-		if err != nil {
-			return fmt.Errorf("failed make diary file. %s", err.Error())
+		if err := makeFile(diaryPath); err != nil {
+			return fmt.Errorf("Failed make diary file. %s", err.Error())
 		}
 	}
 
