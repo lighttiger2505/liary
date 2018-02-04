@@ -122,11 +122,21 @@ func run(c *cli.Context) error {
 		}
 	}
 
-	// Open text editor
-	err = openEditor("vim", diaryPath)
-	if err != nil {
-		fmt.Fprint(os.Stdout, fmt.Sprintf("failed open text editor. %s\n", err.Error()))
-		return fmt.Errorf("Failed open editor. %s", err.Error())
+	args := c.Args()
+	if len(args) > 0 {
+		// Append content
+		file, err := os.OpenFile(diaryPath, os.O_WRONLY|os.O_APPEND, 0644)
+		if err != nil {
+			return fmt.Errorf("Failed append diary. %s", err.Error())
+		}
+		defer file.Close()
+		fmt.Fprintln(file, args[0])
+	} else {
+		// Open text editor
+		err = openEditor("vim", diaryPath)
+		if err != nil {
+			return fmt.Errorf("Failed open editor. %s", err.Error())
+		}
 	}
 
 	return nil
