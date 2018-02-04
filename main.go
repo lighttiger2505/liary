@@ -81,9 +81,13 @@ func run(c *cli.Context) error {
 	}
 
 	// Getting time for target diary
+	date := c.String("date")
 	before := c.Int("before")
 	after := c.Int("after")
-	targetTime := targetTime(before, after)
+	targetTime, err := targetTime(date, before, after)
+	if err != nil {
+		return err
+	}
 
 	// Getting diary path
 	year, month, day := targetTime.Date()
@@ -140,15 +144,22 @@ func diaryPath(year, month, day string) (string, error) {
 	return diaryPath, nil
 }
 
-func targetTime(before, after int) time.Time {
+func targetTime(date string, before, after int) (time.Time, error) {
 	now := time.Now()
+	if date != "" {
+		fmt.Println(date)
+		now, err := time.Parse("2006-01-02", date)
+		if err != nil {
+			return now, err
+		}
+	}
 	if before != 0 {
-		return now.AddDate(0, 0, before)
+		return now.AddDate(0, 0, before), nil
 	}
 	if after != 0 {
-		return now.AddDate(0, 0, -1*after)
+		return now.AddDate(0, 0, -1*after), nil
 	}
-	return now
+	return now, nil
 }
 
 func dirWalk(dir string) []string {
