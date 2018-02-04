@@ -90,25 +90,31 @@ func run(c *cli.Context) error {
 	}
 
 	// Getting diary path
-	year, month, day := targetTime.Date()
-	diaryPath, err := diaryPath(
-		fmt.Sprintf("%02d", year),
-		fmt.Sprintf("%02d", int(month)),
-		fmt.Sprintf("%02d", day),
-	)
-	if err != nil {
-		return err
+	file := c.String("file")
+	targetPath := ""
+	if file != "" {
+		targetPath = file
+	} else {
+		year, month, day := targetTime.Date()
+		targetPath, err = diaryPath(
+			fmt.Sprintf("%02d", year),
+			fmt.Sprintf("%02d", int(month)),
+			fmt.Sprintf("%02d", day),
+		)
+		if err != nil {
+			return err
+		}
 	}
 
 	// Show diary file path
 	path := c.Bool("path")
 	if path {
-		fmt.Println(diaryPath)
+		fmt.Println(targetPath)
 		return nil
 	}
 
 	// Make directory
-	targetDirPath := filepath.Dir(diaryPath)
+	targetDirPath := filepath.Dir(targetPath)
 	if !isFileExist(targetDirPath) {
 		if err := os.MkdirAll(targetDirPath, 0755); err != nil {
 			return fmt.Errorf("Failed make diary dir. %s", err.Error())
@@ -116,8 +122,8 @@ func run(c *cli.Context) error {
 	}
 
 	// Make diary file
-	if !isFileExist(diaryPath) {
-		if err := makeFile(diaryPath); err != nil {
+	if !isFileExist(targetPath) {
+		if err := makeFile(targetPath); err != nil {
 			return fmt.Errorf("Failed make diary file. %s", err.Error())
 		}
 	}
@@ -125,7 +131,7 @@ func run(c *cli.Context) error {
 	args := c.Args()
 	if len(args) > 0 {
 		// Append content
-		file, err := os.OpenFile(diaryPath, os.O_WRONLY|os.O_APPEND, 0644)
+		file, err := os.OpenFile(targetPath, os.O_WRONLY|os.O_APPEND, 0644)
 		if err != nil {
 			return fmt.Errorf("Failed append diary. %s", err.Error())
 		}
@@ -133,7 +139,7 @@ func run(c *cli.Context) error {
 		fmt.Fprintln(file, args[0])
 	} else {
 		// Open text editor
-		err = openEditor("vim", diaryPath)
+		err = openEditor("vim", targetPath)
 		if err != nil {
 			return fmt.Errorf("Failed open editor. %s", err.Error())
 		}
