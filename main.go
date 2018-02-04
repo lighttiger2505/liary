@@ -139,7 +139,11 @@ func run(c *cli.Context) error {
 		fmt.Fprintln(file, args[0])
 	} else {
 		// Open text editor
-		err = openEditor("vim", targetPath)
+		editorEnv := os.Getenv("EDITOR")
+		if editorEnv == "" {
+			editorEnv = "vim"
+		}
+		err = openEditor(editorEnv, targetPath)
 		if err != nil {
 			return fmt.Errorf("Failed open editor. %s", err.Error())
 		}
