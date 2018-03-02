@@ -22,7 +22,7 @@ func main() {
 	err := newApp().Run(os.Args)
 	var exitCode = ExitCodeOK
 	if err != nil {
-		fmt.Println(os.Stderr, err.Error())
+		fmt.Fprint(os.Stderr, err.Error())
 		exitCode = ExitCodeError
 	}
 	os.Exit(exitCode)
