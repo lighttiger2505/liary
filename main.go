@@ -95,12 +95,7 @@ func run(c *cli.Context) error {
 	if file != "" {
 		targetPath = file
 	} else {
-		year, month, day := targetTime.Date()
-		targetPath, err = diaryPath(
-			fmt.Sprintf("%02d", year),
-			fmt.Sprintf("%02d", int(month)),
-			fmt.Sprintf("%02d", day),
-		)
+		targetPath, err = diaryPath(targetTime, diaryDirPath())
 		if err != nil {
 			return err
 		}
@@ -158,9 +153,15 @@ func diaryDirPath() string {
 	return diaryDirPath
 }
 
-func diaryPath(year, month, day string) (string, error) {
-	diaryDirPath := diaryDirPath()
-	diaryPath := filepath.Join(diaryDirPath, year, month, fmt.Sprintf("%s.md", day))
+func diaryPath(targetTime time.Time, dirPath string) (string, error) {
+	year, month, day := targetTime.Date()
+	// diaryDirPath := diaryDirPath()
+	diaryPath := filepath.Join(
+		dirPath,
+		fmt.Sprintf("%02d", year),
+		fmt.Sprintf("%02d", int(month)),
+		fmt.Sprintf("%s.md", fmt.Sprintf("%02d", day)),
+	)
 	return diaryPath, nil
 }
 
@@ -211,6 +212,22 @@ func makeFile(fPath string) error {
 func isFileExist(fPath string) bool {
 	_, err := os.Stat(fPath)
 	return err == nil || !os.IsNotExist(err)
+}
+
+func searchBeforeDate(startDate time.Time, dirPath string) (time.Time, error) {
+
+	for i := 0; i < 30; i++ {
+		date := startDate.AddDate(0, 0, -1*i)
+		path, err := diaryPath(date, diaryDirPath())
+		if err != nil {
+			return time.Time{}, err
+		}
+
+		if isFileExist(path) {
+			return date, nil
+		}
+	}
+	return time.Time{}, fmt.Errorf("Not found before diary")
 }
 
 func openEditor(program string, args ...string) error {
