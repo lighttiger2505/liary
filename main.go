@@ -10,6 +10,7 @@ import (
 
 	"github.com/mitchellh/go-homedir"
 	"github.com/urfave/cli"
+	"golang.org/x/crypto/ssh/terminal"
 )
 
 const (
@@ -123,15 +124,29 @@ func run(c *cli.Context) error {
 		}
 	}
 
-	args := c.Args()
-	if len(args) > 0 {
+	var arg string
+	if terminal.IsTerminal(0) {
+		if len(c.Args()) > 0 {
+			arg = c.Args()[0]
+		} else {
+			arg = ""
+		}
+	} else {
+		b, err := ioutil.ReadAll(os.Stdin)
+		if err != nil {
+			return fmt.Errorf("Failed make diary file. %s", err.Error())
+		}
+		arg = string(b)
+	}
+
+	if arg != "" {
 		// Append content
 		file, err := os.OpenFile(targetPath, os.O_WRONLY|os.O_APPEND, 0644)
 		if err != nil {
 			return fmt.Errorf("Failed append diary. %s", err.Error())
 		}
 		defer file.Close()
-		fmt.Fprintln(file, args[0])
+		fmt.Fprintln(file, arg)
 	} else {
 		// Open text editor
 		editorEnv := os.Getenv("EDITOR")
