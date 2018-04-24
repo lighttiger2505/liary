@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"time"
 
@@ -69,16 +68,10 @@ func newApp() *cli.App {
 }
 
 func run(c *cli.Context) error {
-
 	// Show diary file list
 	list := c.Bool("list")
 	if list {
-		diaryDirPath := diaryDirPath()
-		diaryPaths := dirWalk(diaryDirPath)
-		for _, diaryPath := range diaryPaths {
-			fmt.Println(diaryPath)
-		}
-		return nil
+		return List()
 	}
 
 	// Getting time for target diary
@@ -117,49 +110,18 @@ func run(c *cli.Context) error {
 		}
 	}
 
-	// Make diary file
-	if !isFileExist(targetPath) {
-		if err := makeFile(targetPath); err != nil {
-			return fmt.Errorf("Failed make diary file. %s", err.Error())
-		}
+	appendVal, err := getAppendValue(c.Args())
+	if err != nil {
+		return fmt.Errorf("Failed get append value %s", err)
 	}
 
-	var arg string
-	if terminal.IsTerminal(0) {
-		if len(c.Args()) > 0 {
-			arg = c.Args()[0]
-		} else {
-			arg = ""
-		}
-	} else {
-		b, err := ioutil.ReadAll(os.Stdin)
-		if err != nil {
-			return fmt.Errorf("Failed make diary file. %s", err.Error())
-		}
-		arg = string(b)
-	}
-
-	if arg != "" {
+	if appendVal != "" {
 		// Append content
-		file, err := os.OpenFile(targetPath, os.O_WRONLY|os.O_APPEND, 0644)
-		if err != nil {
-			return fmt.Errorf("Failed append diary. %s", err.Error())
-		}
-		defer file.Close()
-		fmt.Fprintln(file, arg)
-	} else {
-		// Open text editor
-		editorEnv := os.Getenv("EDITOR")
-		if editorEnv == "" {
-			editorEnv = "vim"
-		}
-		err = openEditor(editorEnv, targetPath)
-		if err != nil {
-			return fmt.Errorf("Failed open editor. %s", err.Error())
-		}
+		return Append(targetPath, appendVal)
 	}
 
-	return nil
+	// Open text editor
+	return Open(targetPath)
 }
 
 func diaryDirPath() string {
@@ -216,14 +178,6 @@ func dirWalk(dir string) []string {
 	return paths
 }
 
-func makeFile(fPath string) error {
-	err := ioutil.WriteFile(fPath, []byte(""), 0644)
-	if err != nil {
-		return fmt.Errorf("Failed make file. %v", err.Error())
-	}
-	return nil
-}
-
 func isFileExist(fPath string) bool {
 	_, err := os.Stat(fPath)
 	return err == nil || !os.IsNotExist(err)
@@ -245,10 +199,20 @@ func searchBeforeDate(startDate time.Time, dirPath string) (time.Time, error) {
 	return time.Time{}, fmt.Errorf("Not found before diary")
 }
 
-func openEditor(program string, args ...string) error {
-	c := exec.Command(program, args...)
-	c.Stdin = os.Stdin
-	c.Stdout = os.Stdout
-	c.Stderr = os.Stderr
-	return c.Run()
+func getAppendValue(args []string) (string, error) {
+	var val string
+	if terminal.IsTerminal(0) {
+		if len(args) > 0 {
+			val = args[0]
+		} else {
+			val = ""
+		}
+	} else {
+		b, err := ioutil.ReadAll(os.Stdin)
+		if err != nil {
+			return "", fmt.Errorf("Failed make diary file. %s", err.Error())
+		}
+		val = string(b)
+	}
+	return val, nil
 }
