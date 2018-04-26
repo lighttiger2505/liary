@@ -39,6 +39,10 @@ func newApp() *cli.App {
 	app.Email = "lighttiger2505@gmail.com"
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
+			Name:  "prefix, x",
+			Usage: "Diary file prefix",
+		},
+		cli.StringFlag{
 			Name:  "file, f",
 			Usage: "Specified file",
 		},
@@ -85,11 +89,12 @@ func run(c *cli.Context) error {
 
 	// Getting diary path
 	file := c.String("file")
+	prefix := c.String("prefix")
 	targetPath := ""
 	if file != "" {
 		targetPath = file
 	} else {
-		targetPath, err = diaryPath(targetTime, diaryDirPath())
+		targetPath, err = diaryPath(targetTime, diaryDirPath(), prefix)
 		if err != nil {
 			return err
 		}
@@ -130,14 +135,14 @@ func diaryDirPath() string {
 	return diaryDirPath
 }
 
-func diaryPath(targetTime time.Time, dirPath string) (string, error) {
+func diaryPath(targetTime time.Time, dirPath string, prefix string) (string, error) {
 	year, month, day := targetTime.Date()
-	// diaryDirPath := diaryDirPath()
+	filename := fmt.Sprintf("%s-%s.md", prefix, fmt.Sprintf("%02d", day))
 	diaryPath := filepath.Join(
 		dirPath,
 		fmt.Sprintf("%02d", year),
 		fmt.Sprintf("%02d", int(month)),
-		fmt.Sprintf("%s.md", fmt.Sprintf("%02d", day)),
+		filename,
 	)
 	return diaryPath, nil
 }
@@ -187,7 +192,7 @@ func searchBeforeDate(startDate time.Time, dirPath string) (time.Time, error) {
 
 	for i := 0; i < 30; i++ {
 		date := startDate.AddDate(0, 0, -1*i)
-		path, err := diaryPath(date, diaryDirPath())
+		path, err := diaryPath(date, diaryDirPath(), "")
 		if err != nil {
 			return time.Time{}, err
 		}
