@@ -51,6 +51,10 @@ func newApp() *cli.App {
 			Usage: "Show diary file list",
 		},
 		cli.BoolFlag{
+			Name:  "today, t",
+			Usage: "Show diary file list on today",
+		},
+		cli.BoolFlag{
 			Name:  "path, p",
 			Usage: "Show diary file path",
 		},
@@ -72,12 +76,6 @@ func newApp() *cli.App {
 }
 
 func run(c *cli.Context) error {
-	// Show diary file list
-	list := c.Bool("list")
-	if list {
-		return List()
-	}
-
 	// Getting time for target diary
 	date := c.String("date")
 	before := c.Int("before")
@@ -98,6 +96,15 @@ func run(c *cli.Context) error {
 		if err != nil {
 			return err
 		}
+	}
+
+	// Show diary file list
+	list := c.Bool("list")
+	if list {
+		if c.GlobalBool("date") || c.GlobalBool("before") || c.GlobalBool("after") || c.GlobalBool("today") {
+			return ListTargetDate(targetTime)
+		}
+		return ListAll()
 	}
 
 	// Show diary file path
@@ -135,9 +142,37 @@ func diaryDirPath() string {
 	return diaryDirPath
 }
 
+func MonthPath(targetTime time.Time, dirPath string) string {
+	year, month, _ := targetTime.Date()
+	result := filepath.Join(
+		dirPath,
+		fmt.Sprintf("%02d", year),
+		fmt.Sprintf("%02d", int(month)),
+	)
+	return result
+}
+
+func DayPath(targetTime time.Time, dirPath string) string {
+	year, month, day := targetTime.Date()
+	diaryPath := filepath.Join(
+		dirPath,
+		fmt.Sprintf("%02d", year),
+		fmt.Sprintf("%02d", int(month)),
+		fmt.Sprintf("%02d", day),
+	)
+	return diaryPath
+}
+
 func diaryPath(targetTime time.Time, dirPath string, prefix string) (string, error) {
 	year, month, day := targetTime.Date()
-	filename := fmt.Sprintf("%s-%s.md", prefix, fmt.Sprintf("%02d", day))
+
+	var filename string
+	if prefix != "" {
+		filename = fmt.Sprintf("%s-%s.md", fmt.Sprintf("%02d", day), prefix)
+	} else {
+		filename = fmt.Sprintf("%s.md", fmt.Sprintf("%02d", day))
+	}
+
 	diaryPath := filepath.Join(
 		dirPath,
 		fmt.Sprintf("%02d", year),
@@ -150,7 +185,6 @@ func diaryPath(targetTime time.Time, dirPath string, prefix string) (string, err
 func targetTime(date string, before, after int) (time.Time, error) {
 	now := time.Now()
 	if date != "" {
-		fmt.Println(date)
 		now, err := time.Parse("2006-01-02", date)
 		if err != nil {
 			return now, err
@@ -163,24 +197,6 @@ func targetTime(date string, before, after int) (time.Time, error) {
 		return now.AddDate(0, 0, after), nil
 	}
 	return now, nil
-}
-
-func dirWalk(dir string) []string {
-	files, err := ioutil.ReadDir(dir)
-	if err != nil {
-		panic(err)
-	}
-
-	var paths []string
-	for _, file := range files {
-		if file.IsDir() {
-			paths = append(paths, dirWalk(filepath.Join(dir, file.Name()))...)
-			continue
-		}
-		paths = append(paths, filepath.Join(dir, file.Name()))
-	}
-
-	return paths
 }
 
 func isFileExist(fPath string) bool {
