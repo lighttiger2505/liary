@@ -8,13 +8,6 @@ import (
 )
 
 func Open(path string) error {
-	// Make diary file
-	if !isFileExist(path) {
-		if err := makeFile(path); err != nil {
-			return fmt.Errorf("Failed make diary file. %s", err.Error())
-		}
-	}
-
 	// Open text editor
 	editorEnv := os.Getenv("EDITOR")
 	if editorEnv == "" {
