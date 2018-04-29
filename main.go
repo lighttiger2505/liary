@@ -39,8 +39,8 @@ func newApp() *cli.App {
 	app.Email = "lighttiger2505@gmail.com"
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
-			Name:  "prefix, x",
-			Usage: "Diary file prefix",
+			Name:  "suffix, x",
+			Usage: "Diary file suffix",
 		},
 		cli.StringFlag{
 			Name:  "file, f",
@@ -87,12 +87,12 @@ func run(c *cli.Context) error {
 
 	// Getting diary path
 	file := c.String("file")
-	prefix := c.String("prefix")
+	suffix := c.String("suffix")
 	targetPath := ""
 	if file != "" {
 		targetPath = file
 	} else {
-		targetPath, err = diaryPath(targetTime, diaryDirPath(), prefix)
+		targetPath, err = diaryPath(targetTime, diaryDirPath(), suffix)
 		if err != nil {
 			return err
 		}
@@ -163,12 +163,12 @@ func DayPath(targetTime time.Time, dirPath string) string {
 	return diaryPath
 }
 
-func diaryPath(targetTime time.Time, dirPath string, prefix string) (string, error) {
+func diaryPath(targetTime time.Time, dirPath string, suffix string) (string, error) {
 	year, month, day := targetTime.Date()
 
 	var filename string
-	if prefix != "" {
-		filename = fmt.Sprintf("%s-%s.md", fmt.Sprintf("%02d", day), prefix)
+	if suffix != "" {
+		filename = fmt.Sprintf("%s-%s.md", fmt.Sprintf("%02d", day), suffix)
 	} else {
 		filename = fmt.Sprintf("%s.md", fmt.Sprintf("%02d", day))
 	}
