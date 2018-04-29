@@ -79,22 +79,6 @@ func isFileExist(fPath string) bool {
 	return err == nil || !os.IsNotExist(err)
 }
 
-func searchBeforeDate(startDate time.Time, dirPath string) (time.Time, error) {
-
-	for i := 0; i < 30; i++ {
-		date := startDate.AddDate(0, 0, -1*i)
-		path, err := DiaryPath(date, diaryDirPath(), "")
-		if err != nil {
-			return time.Time{}, err
-		}
-
-		if isFileExist(path) {
-			return date, nil
-		}
-	}
-	return time.Time{}, fmt.Errorf("Not found before diary")
-}
-
 func GetAppendValue(args []string) (string, error) {
 	var val string
 	if terminal.IsTerminal(0) {
