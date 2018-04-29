@@ -82,16 +82,10 @@ func run(c *cli.Context) error {
 	}
 
 	// Getting diary path
-	file := c.String("file")
 	suffix := c.String("suffix")
-	targetPath := ""
-	if file != "" {
-		targetPath = file
-	} else {
-		targetPath, err = DiaryPath(targetTime, diaryDirPath(), suffix)
-		if err != nil {
-			return err
-		}
+	targetPath, err := DiaryPath(targetTime, diaryDirPath(), suffix)
+	if err != nil {
+		return err
 	}
 
 	// Show diary file list
