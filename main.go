@@ -9,8 +9,8 @@ import (
 )
 
 const (
-	ExitCodeOK        int = iota //0
-	ExitCodeFileError int = iota //2
+	ExitCodeOK    int = iota //0
+	ExitCodeError int = iota //1
 )
 
 func main() {
