@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/lighttiger2505/liary/internal"
 	"github.com/urfave/cli"
@@ -92,7 +93,7 @@ func run(c *cli.Context) error {
 	}
 
 	// Getting diary path
-	suffix := c.String("suffix")
+	suffix := suffixJoin(c.String("suffix"))
 	targetPath, err := internal.DiaryPath(targetTime, internal.DiaryDirPath(), suffix)
 	if err != nil {
 		return err
@@ -136,4 +137,9 @@ func run(c *cli.Context) error {
 
 	// Open text editor
 	return Open(targetPath)
+}
+
+func suffixJoin(val string) string {
+	words := strings.Fields(val)
+	return strings.Join(words, "_")
 }
