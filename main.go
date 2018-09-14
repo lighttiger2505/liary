@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/lighttiger2505/liary/internal"
 	"github.com/urfave/cli"
 )
 
@@ -75,14 +76,14 @@ func run(c *cli.Context) error {
 	date := c.String("date")
 	before := c.Int("before")
 	after := c.Int("after")
-	targetTime, err := TargetTime(date, before, after)
+	targetTime, err := internal.TargetTime(date, before, after)
 	if err != nil {
 		return err
 	}
 
 	// Getting diary path
 	suffix := c.String("suffix")
-	targetPath, err := DiaryPath(targetTime, diaryDirPath(), suffix)
+	targetPath, err := internal.DiaryPath(targetTime, internal.DiaryDirPath(), suffix)
 	if err != nil {
 		return err
 	}
@@ -105,13 +106,13 @@ func run(c *cli.Context) error {
 
 	// Make directory
 	targetDirPath := filepath.Dir(targetPath)
-	if !isFileExist(targetDirPath) {
+	if !internal.IsFileExist(targetDirPath) {
 		if err := os.MkdirAll(targetDirPath, 0755); err != nil {
 			return fmt.Errorf("Failed make diary dir. %s", err.Error())
 		}
 	}
 
-	appendVal, err := GetAppendValue(c.Args())
+	appendVal, err := internal.GetAppendValue(c.Args())
 	if err != nil {
 		return fmt.Errorf("Failed get append value %s", err)
 	}

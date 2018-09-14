@@ -1,17 +1,14 @@
-package main
+package internal
 
 import (
 	"fmt"
-	"io/ioutil"
-	"os"
 	"path/filepath"
 	"time"
 
 	homedir "github.com/mitchellh/go-homedir"
-	"golang.org/x/crypto/ssh/terminal"
 )
 
-func diaryDirPath() string {
+func DiaryDirPath() string {
 	home, _ := homedir.Dir()
 	diaryDirPath := filepath.Join(home, "diary")
 	return diaryDirPath
@@ -55,44 +52,4 @@ func DiaryPath(targetTime time.Time, dirPath string, suffix string) (string, err
 		filename,
 	)
 	return diaryPath, nil
-}
-
-func TargetTime(date string, before, after int) (time.Time, error) {
-	now := time.Now()
-	if date != "" {
-		now, err := time.Parse("2006-01-02", date)
-		if err != nil {
-			return now, err
-		}
-	}
-	if before != 0 {
-		return now.AddDate(0, 0, -1*before), nil
-	}
-	if after != 0 {
-		return now.AddDate(0, 0, after), nil
-	}
-	return now, nil
-}
-
-func isFileExist(fPath string) bool {
-	_, err := os.Stat(fPath)
-	return err == nil || !os.IsNotExist(err)
-}
-
-func GetAppendValue(args []string) (string, error) {
-	var val string
-	if terminal.IsTerminal(0) {
-		if len(args) > 0 {
-			val = args[0]
-		} else {
-			val = ""
-		}
-	} else {
-		b, err := ioutil.ReadAll(os.Stdin)
-		if err != nil {
-			return "", fmt.Errorf("Failed make diary file. %s", err.Error())
-		}
-		val = string(b)
-	}
-	return val, nil
 }

@@ -2,12 +2,13 @@ package main
 
 import (
 	"fmt"
+	"github.com/lighttiger2505/liary/internal"
 	"os"
 )
 
 func Append(path string, val string) error {
 	// Make diary file
-	if !isFileExist(path) {
+	if !internal.IsFileExist(path) {
 		if err := makeFile(path); err != nil {
 			return fmt.Errorf("Failed make diary file. %s", err.Error())
 		}

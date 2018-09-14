@@ -6,10 +6,12 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+
+	"github.com/lighttiger2505/liary/internal"
 )
 
 func ListAll() error {
-	diaryDirPath := diaryDirPath()
+	diaryDirPath := internal.DiaryDirPath()
 	diaryPaths := dirWalk(diaryDirPath)
 	for _, diaryPath := range diaryPaths {
 		fmt.Println(diaryPath)
@@ -18,8 +20,8 @@ func ListAll() error {
 }
 
 func ListTargetDate(date time.Time) error {
-	monthPath := MonthPath(date, diaryDirPath())
-	dayPath := DayPath(date, diaryDirPath())
+	monthPath := internal.MonthPath(date, internal.DiaryDirPath())
+	dayPath := internal.DayPath(date, internal.DiaryDirPath())
 	diaryPaths := dirWalk(monthPath)
 	for _, diaryPath := range diaryPaths {
 		if strings.HasPrefix(diaryPath, dayPath) {
