@@ -66,6 +66,16 @@ func newApp() *cli.App {
 			Name:  "after, a",
 			Usage: "Specified after diary by day",
 		},
+		cli.IntFlag{
+			Name:  "before-append, B",
+			Usage: "NUM of blank line to add before content to be append",
+			Value: 1,
+		},
+		cli.IntFlag{
+			Name:  "after-append, A",
+			Usage: "NUM of blank line to add after content to be append",
+			Value: 1,
+		},
 	}
 	app.Action = run
 	return app
@@ -117,9 +127,11 @@ func run(c *cli.Context) error {
 		return fmt.Errorf("Failed get append value %s", err)
 	}
 
+	numLineBefore := c.Int("before-append")
+	numLineAfter := c.Int("after-append")
 	if appendVal != "" {
 		// Append content
-		return Append(targetPath, appendVal)
+		return Append(targetPath, appendVal, numLineBefore, numLineAfter)
 	}
 
 	// Open text editor

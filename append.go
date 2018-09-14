@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-func Append(path string, val string) error {
+func Append(path string, val string, numLineBefore, numLineAfter int) error {
 	// Make diary file
 	if !internal.IsFileExist(path) {
 		if err := makeFile(path); err != nil {
@@ -20,6 +20,14 @@ func Append(path string, val string) error {
 		return fmt.Errorf("Failed append diary. %s", err.Error())
 	}
 	defer file.Close()
-	fmt.Fprintln(file, val)
+	appendBlackLine(file, numLineBefore)
+	fmt.Fprint(file, val)
+	appendBlackLine(file, numLineAfter)
 	return nil
+}
+
+func appendBlackLine(file *os.File, num int) {
+	for i := 0; i < num; i++ {
+		fmt.Fprintln(file, "")
+	}
 }
