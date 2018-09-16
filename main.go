@@ -37,6 +37,10 @@ func newApp() *cli.App {
 	app.Email = "lighttiger2505@gmail.com"
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
+			Name:  "code, c",
+			Usage: "append code block",
+		},
+		cli.StringFlag{
 			Name:  "suffix, x",
 			Usage: "Diary file suffix",
 		},
@@ -119,10 +123,8 @@ func run(c *cli.Context) error {
 
 	// Make directory
 	targetDirPath := filepath.Dir(targetPath)
-	if !internal.IsFileExist(targetDirPath) {
-		if err := os.MkdirAll(targetDirPath, 0755); err != nil {
-			return fmt.Errorf("Failed make diary dir. %s", err.Error())
-		}
+	if err := internal.MakeDir(targetDirPath); err != nil {
+		return err
 	}
 
 	appendVal, err := internal.GetAppendValue(c.Args())

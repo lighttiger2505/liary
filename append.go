@@ -8,21 +8,23 @@ import (
 
 func Append(path string, val string, numLineBefore, numLineAfter int) error {
 	// Make diary file
-	if !internal.IsFileExist(path) {
-		if err := makeFile(path); err != nil {
-			return fmt.Errorf("Failed make diary file. %s", err.Error())
-		}
+	err := internal.MakeFile(path)
+	if err != nil {
+		return err
 	}
 
-	// Append content
+	// Open diary file
 	file, err := os.OpenFile(path, os.O_WRONLY|os.O_APPEND, 0644)
 	if err != nil {
 		return fmt.Errorf("Failed append diary. %s", err.Error())
 	}
 	defer file.Close()
+
+	// Append content
 	appendBlackLine(file, numLineBefore)
 	fmt.Fprint(file, val)
 	appendBlackLine(file, numLineAfter)
+
 	return nil
 }
 
