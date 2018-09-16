@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/lighttiger2505/liary/internal"
 	"github.com/urfave/cli"
@@ -84,10 +85,11 @@ func newApp() *cli.App {
 
 func run(c *cli.Context) error {
 	// Getting time for target diary
+
 	date := c.String("date")
 	before := c.Int("before")
 	after := c.Int("after")
-	targetTime, err := internal.TargetTime(date, before, after)
+	targetTime, err := getTargetTime(date, before, after)
 	if err != nil {
 		return err
 	}
@@ -142,4 +144,12 @@ func run(c *cli.Context) error {
 func suffixJoin(val string) string {
 	words := strings.Fields(val)
 	return strings.Join(words, "_")
+}
+
+func getTargetTime(date string, before, after int) (time.Time, error) {
+	if date != "" {
+		return time.Parse("2006-01-02", date)
+	}
+	now := time.Now()
+	return internal.UpDonwDate(now, before, after)
 }
