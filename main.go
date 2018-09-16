@@ -36,9 +36,13 @@ func newApp() *cli.App {
 	app.Author = "lighttiger2505"
 	app.Email = "lighttiger2505@gmail.com"
 	app.Flags = []cli.Flag{
-		cli.StringFlag{
+		cli.BoolFlag{
 			Name:  "code, c",
 			Usage: "append code block",
+		},
+		cli.StringFlag{
+			Name:  "language, g",
+			Usage: "code block language",
 		},
 		cli.StringFlag{
 			Name:  "suffix, x",
@@ -132,11 +136,16 @@ func run(c *cli.Context) error {
 		return fmt.Errorf("Failed get append value %s", err)
 	}
 
+	code := c.Bool("code")
+	lang := c.String("language")
 	numLineBefore := c.Int("before-append")
 	numLineAfter := c.Int("after-append")
 	if appendVal != "" {
-		// Append content
-		return Append(targetPath, appendVal, numLineBefore, numLineAfter)
+		if code {
+			return AppendCodeBlock(targetPath, appendVal, numLineBefore, numLineAfter, lang)
+		} else {
+			return Append(targetPath, appendVal, numLineBefore, numLineAfter)
+		}
 	}
 
 	// Open text editor
