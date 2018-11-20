@@ -93,7 +93,6 @@ func newApp() *cli.App {
 
 func run(c *cli.Context) error {
 	// Getting time for target diary
-
 	date := c.String("date")
 	before := c.Int("before")
 	after := c.Int("after")
@@ -143,9 +142,8 @@ func run(c *cli.Context) error {
 	if appendVal != "" {
 		if code {
 			return AppendCodeBlock(targetPath, appendVal, numLineBefore, numLineAfter, lang)
-		} else {
-			return Append(targetPath, appendVal, numLineBefore, numLineAfter)
 		}
+		return Append(targetPath, appendVal, numLineBefore, numLineAfter)
 	}
 
 	// Open text editor
