@@ -48,10 +48,6 @@ func newApp() *cli.App {
 			Name:  "suffix, x",
 			Usage: "Diary file suffix",
 		},
-		cli.StringFlag{
-			Name:  "file, f",
-			Usage: "Specified file",
-		},
 		cli.BoolFlag{
 			Name:  "list, l",
 			Usage: "Show diary file list",
