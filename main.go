@@ -35,59 +35,69 @@ func newApp() *cli.App {
 	app.Version = "0.0.1"
 	app.Author = "lighttiger2505"
 	app.Email = "lighttiger2505@gmail.com"
-	app.Flags = []cli.Flag{
-		cli.BoolFlag{
-			Name:  "code, c",
-			Usage: "append code block",
+	app.Commands = []cli.Command{
+		cli.Command{
+			Name:    "edit",
+			Aliases: []string{"e"},
+			Usage:   "edit diary",
+			Action:  edit,
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "suffix, x",
+					Usage: "Diary file suffix",
+				},
+				cli.StringFlag{
+					Name:  "date, d",
+					Usage: "Specified date",
+				},
+				cli.IntFlag{
+					Name:  "before, b",
+					Usage: "Specified before diary by day",
+				},
+				cli.IntFlag{
+					Name:  "after, a",
+					Usage: "Specified after diary by day",
+				},
+			},
 		},
-		cli.StringFlag{
-			Name:  "language, g",
-			Usage: "code block language",
+		cli.Command{
+			Name:    "append",
+			Aliases: []string{"a"},
+			Usage:   "grep diary",
+			Action:  appendRun,
+			Flags: []cli.Flag{
+				cli.BoolFlag{
+					Name:  "code, c",
+					Usage: "append code block",
+				},
+				cli.StringFlag{
+					Name:  "language, g",
+					Usage: "code block language",
+				},
+				cli.IntFlag{
+					Name:  "before-append, B",
+					Usage: "NUM of blank line to add before content to be append",
+					Value: 1,
+				},
+				cli.IntFlag{
+					Name:  "after-append, A",
+					Usage: "NUM of blank line to add after content to be append",
+					Value: 1,
+				},
+			},
 		},
-		cli.StringFlag{
-			Name:  "suffix, x",
-			Usage: "Diary file suffix",
-		},
-		cli.BoolFlag{
-			Name:  "list, l",
-			Usage: "Show diary file list",
-		},
-		cli.BoolFlag{
-			Name:  "today, t",
-			Usage: "Show diary file list on today",
-		},
-		cli.BoolFlag{
-			Name:  "path, p",
-			Usage: "Show diary file path",
-		},
-		cli.StringFlag{
-			Name:  "date, d",
-			Usage: "Specified date",
-		},
-		cli.IntFlag{
-			Name:  "before, b",
-			Usage: "Specified before diary by day",
-		},
-		cli.IntFlag{
-			Name:  "after, a",
-			Usage: "Specified after diary by day",
-		},
-		cli.IntFlag{
-			Name:  "before-append, B",
-			Usage: "NUM of blank line to add before content to be append",
-			Value: 1,
-		},
-		cli.IntFlag{
-			Name:  "after-append, A",
-			Usage: "NUM of blank line to add after content to be append",
-			Value: 1,
+		cli.Command{
+			Name:    "list",
+			Aliases: []string{"l"},
+			Usage:   "list diary",
+			Action:  list,
 		},
 	}
-	app.Action = run
+	// 	app.Action = run
 	return app
 }
 
-func run(c *cli.Context) error {
+func edit(c *cli.Context) error {
 	// Getting time for target diary
 	date := c.String("date")
 	before := c.Int("before")
@@ -104,20 +114,43 @@ func run(c *cli.Context) error {
 		return err
 	}
 
-	// Show diary file list
-	list := c.Bool("list")
-	if list {
-		if c.GlobalBool("date") || c.GlobalBool("before") || c.GlobalBool("after") || c.GlobalBool("today") {
-			return ListTargetDate(targetTime)
-		}
-		return ListAll()
-	}
-
 	// Show diary file path
 	path := c.Bool("path")
 	if path {
 		fmt.Println(targetPath)
 		return nil
+	}
+
+	// Make directory
+	targetDirPath := filepath.Dir(targetPath)
+	if err := internal.MakeDir(targetDirPath); err != nil {
+		return err
+	}
+
+	// Open text editor
+	return Open(targetPath)
+}
+
+func list(c *cli.Context) error {
+	// Show diary file list
+	return ListAll()
+}
+
+func appendRun(c *cli.Context) error {
+	// Getting time for target diary
+	date := c.String("date")
+	before := c.Int("before")
+	after := c.Int("after")
+	targetTime, err := getTargetTime(date, before, after)
+	if err != nil {
+		return err
+	}
+
+	// Getting diary path
+	suffix := suffixJoin(c.String("suffix"))
+	targetPath, err := internal.DiaryPath(targetTime, internal.DiaryDirPath(), suffix)
+	if err != nil {
+		return err
 	}
 
 	// Make directory
@@ -141,9 +174,7 @@ func run(c *cli.Context) error {
 		}
 		return Append(targetPath, appendVal, numLineBefore, numLineAfter)
 	}
-
-	// Open text editor
-	return Open(targetPath)
+	return nil
 }
 
 func suffixJoin(val string) string {
