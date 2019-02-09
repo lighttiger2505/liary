@@ -11,3 +11,11 @@ func UpDonwDate(now time.Time, before, after int) (time.Time, error) {
 	}
 	return now, nil
 }
+
+func GetTargetTime(date string, before, after int) (time.Time, error) {
+	if date != "" {
+		return time.Parse("2006-01-02", date)
+	}
+	now := time.Now()
+	return UpDonwDate(now, before, after)
+}

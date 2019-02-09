@@ -1,4 +1,4 @@
-package main
+package cmd
 
 import (
 	"fmt"
@@ -8,9 +8,15 @@ import (
 	"time"
 
 	"github.com/lighttiger2505/liary/internal"
+	"github.com/urfave/cli"
 )
 
-func ListAll() error {
+func ListAction(c *cli.Context) error {
+	// Show diary file list
+	return list()
+}
+
+func list() error {
 	diaryDirPath := internal.DiaryDirPath()
 	diaryPaths := dirWalk(diaryDirPath)
 	for _, diaryPath := range diaryPaths {
