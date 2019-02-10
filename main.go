@@ -88,6 +88,28 @@ func newApp() *cli.App {
 			Aliases: []string{"l"},
 			Usage:   "list diary",
 			Action:  cmd.ListAction,
+			Flags: []cli.Flag{
+				cli.BoolFlag{
+					Name:  "today, t",
+					Usage: "list only today",
+				},
+				cli.BoolFlag{
+					Name:  "week, w",
+					Usage: "list only this week",
+				},
+				cli.BoolFlag{
+					Name:  "month, m",
+					Usage: "list only this month",
+				},
+				cli.BoolFlag{
+					Name:  "year, y",
+					Usage: "list only this year",
+				},
+				cli.StringFlag{
+					Name:  "range, r",
+					Usage: "relative data range",
+				},
+			},
 		},
 	}
 	// 	app.Action = run
