@@ -16,9 +16,8 @@ func ListAction(c *cli.Context) error {
 	diaryDirPath := internal.DiaryDirPath()
 
 	// Absolute Range
-	var targetPaths []string
+	targetPaths := []string{}
 	if c.Bool("today") {
-		targetPaths = []string{}
 		targetPaths = append(targetPaths, internal.DayPath(now, diaryDirPath))
 	} else if c.Bool("week") {
 		for _, d := range internal.GetWeakDays(now) {
@@ -26,10 +25,8 @@ func ListAction(c *cli.Context) error {
 		}
 		fmt.Println(targetPaths)
 	} else if c.Bool("month") {
-		targetPaths = []string{}
 		targetPaths = append(targetPaths, internal.MonthPath(now, diaryDirPath))
 	} else if c.Bool("year") {
-		targetPaths = []string{}
 		targetPaths = append(targetPaths, internal.YearPath(now, diaryDirPath))
 	}
 

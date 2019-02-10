@@ -38,7 +38,7 @@ func GetDateRange(start time.Time, end time.Time) []time.Time {
 	dayDiff := end.Sub(start) / (time.Hour * 24)
 
 	dateRange := []time.Time{start}
-	for i := 1; i < int(dayDiff)+1; i++ {
+	for i := 1; i <= int(dayDiff); i++ {
 		tmpDate := start.AddDate(0, 0, i)
 		dateRange = append(dateRange, tmpDate)
 	}
