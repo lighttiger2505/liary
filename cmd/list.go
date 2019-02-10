@@ -21,6 +21,10 @@ func ListAction(c *cli.Context) error {
 		targetPaths = []string{}
 		targetPaths = append(targetPaths, internal.DayPath(now, diaryDirPath))
 	} else if c.Bool("week") {
+		for _, d := range internal.GetWeakDays(now) {
+			targetPaths = append(targetPaths, internal.DayPath(d, diaryDirPath))
+		}
+		fmt.Println(targetPaths)
 	} else if c.Bool("month") {
 		targetPaths = []string{}
 		targetPaths = append(targetPaths, internal.MonthPath(now, diaryDirPath))

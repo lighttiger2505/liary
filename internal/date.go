@@ -23,6 +23,17 @@ func GetTargetTime(date string, before, after int) (time.Time, error) {
 	return UpDonwDate(now, before, after)
 }
 
+func GetWeakDays(date time.Time) []time.Time {
+	wd := date.Weekday()
+	weekdays := []time.Time{}
+	for i := time.Sunday; i <= time.Saturday; i++ {
+		diff := i - wd
+		tmpDate := date.AddDate(0, 0, int(diff))
+		weekdays = append(weekdays, tmpDate)
+	}
+	return weekdays
+}
+
 func GetDateRange(start time.Time, end time.Time) []time.Time {
 	dayDiff := end.Sub(start) / (time.Hour * 24)
 
