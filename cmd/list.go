@@ -45,9 +45,9 @@ func ListAction(c *cli.Context) error {
 		}
 	}
 
-	// Filtering
 	diaryPaths := dirWalk(diaryDirPath)
 
+	// Show all list
 	if len(targetPaths) == 0 {
 		for _, diaryPath := range diaryPaths {
 			fmt.Println(diaryPath)
@@ -55,6 +55,7 @@ func ListAction(c *cli.Context) error {
 		return nil
 	}
 
+	// Show filtering list
 	for _, diaryPath := range diaryPaths {
 		for _, targetPath := range targetPaths {
 			if strings.HasPrefix(diaryPath, targetPath) {
