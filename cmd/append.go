@@ -21,7 +21,7 @@ func AppendAction(c *cli.Context) error {
 
 	// Getting diary path
 	suffix := suffixJoin(c.String("suffix"))
-	targetPath, err := internal.DiaryPath(targetTime, internal.DiaryDirPath(), suffix)
+	targetPath, err := internal.DiaryPath(targetTime, suffix)
 	if err != nil {
 		return err
 	}

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 )
 
 func isFileExist(fPath string) bool {
@@ -28,4 +29,20 @@ func MakeDir(dPath string) error {
 		}
 	}
 	return nil
+}
+
+const APP_NAME = "liary"
+
+func getXDGConfigPath(goos string) string {
+	var dir string
+	if goos == "windows" {
+		dir = os.Getenv("APPDATA")
+		if dir == "" {
+			dir = filepath.Join(os.Getenv("USERPROFILE"), "Application Data", APP_NAME)
+		}
+		dir = filepath.Join(dir, "lab")
+	} else {
+		dir = filepath.Join(os.Getenv("HOME"), ".config", APP_NAME)
+	}
+	return dir
 }

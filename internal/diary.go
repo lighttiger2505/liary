@@ -3,15 +3,23 @@ package internal
 import (
 	"fmt"
 	"path/filepath"
+	"runtime"
 	"time"
-
-	homedir "github.com/mitchellh/go-homedir"
 )
 
 func DiaryDirPath() string {
-	home, _ := homedir.Dir()
-	diaryDirPath := filepath.Join(home, "diary")
+	configPath := getXDGConfigPath(runtime.GOOS)
+	diaryDirPath := filepath.Join(configPath, "_post")
 	return diaryDirPath
+}
+
+func YearPath(targetTime time.Time, dirPath string) string {
+	year, _, _ := targetTime.Date()
+	result := filepath.Join(
+		dirPath,
+		fmt.Sprintf("%02d", year),
+	)
+	return result
 }
 
 func MonthPath(targetTime time.Time, dirPath string) string {
@@ -35,9 +43,8 @@ func DayPath(targetTime time.Time, dirPath string) string {
 	return diaryPath
 }
 
-func DiaryPath(targetTime time.Time, dirPath string, suffix string) (string, error) {
-	year, month, day := targetTime.Date()
-
+func DiaryPath(targetTime time.Time, suffix string) (string, error) {
+	_, _, day := targetTime.Date()
 	var filename string
 	if suffix != "" {
 		filename = fmt.Sprintf("%s-%s.md", fmt.Sprintf("%02d", day), suffix)
@@ -46,9 +53,7 @@ func DiaryPath(targetTime time.Time, dirPath string, suffix string) (string, err
 	}
 
 	diaryPath := filepath.Join(
-		dirPath,
-		fmt.Sprintf("%02d", year),
-		fmt.Sprintf("%02d", int(month)),
+		MonthPath(targetTime, DiaryDirPath()),
 		filename,
 	)
 	return diaryPath, nil
