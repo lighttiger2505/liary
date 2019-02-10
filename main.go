@@ -111,6 +111,13 @@ func newApp() *cli.App {
 				},
 			},
 		},
+		cli.Command{
+			Name:    "grep",
+			Aliases: []string{"g"},
+			Usage:   "grep diary",
+			Action:  cmd.GrepAction,
+			Flags:   []cli.Flag{},
+		},
 	}
 	// 	app.Action = run
 	return app
