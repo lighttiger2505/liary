@@ -40,10 +40,6 @@ func newApp() *cli.App {
 			Action:  cmd.EditAction,
 			Flags: []cli.Flag{
 				cli.StringFlag{
-					Name:  "suffix, x",
-					Usage: "Diary file suffix",
-				},
-				cli.StringFlag{
 					Name:  "date, d",
 					Usage: "Specified date",
 				},

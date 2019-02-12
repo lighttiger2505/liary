@@ -22,7 +22,11 @@ func EditAction(c *cli.Context) error {
 	}
 
 	// Getting diary path
-	suffix := suffixJoin(c.String("suffix"))
+	suffix := ""
+	args := c.Args()
+	if len(args) > 0 {
+		suffix = suffixJoin(args[0])
+	}
 	targetPath, err := internal.DiaryPath(targetTime, suffix)
 	if err != nil {
 		return err
