@@ -49,7 +49,7 @@ func EditAction(c *cli.Context) error {
 	}
 
 	// Open text editor
-	return internal.OpenEditor(cfg.Editor, targetDirPath)
+	return internal.OpenEditor(cfg.Editor, targetPath)
 }
 
 func suffixJoin(val string) string {

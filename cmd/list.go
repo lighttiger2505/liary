@@ -48,7 +48,7 @@ func ListAction(c *cli.Context) error {
 		}
 	}
 
-	diaryPaths := dirWalk(diaryDirPath)
+	diaryPaths := filterMarkdown(dirWalk(diaryDirPath))
 
 	// Show all list
 	if len(targetPaths) == 0 {
