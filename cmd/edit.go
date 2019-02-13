@@ -2,8 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"os"
-	"os/exec"
 	"path/filepath"
 	"strings"
 
@@ -12,6 +10,11 @@ import (
 )
 
 func EditAction(c *cli.Context) error {
+	cfg, err := internal.GetConfig()
+	if err != nil {
+		return err
+	}
+
 	// Getting time for target diary
 	date := c.String("date")
 	before := c.Int("before")
@@ -27,7 +30,7 @@ func EditAction(c *cli.Context) error {
 	if len(args) > 0 {
 		suffix = suffixJoin(args[0])
 	}
-	targetPath, err := internal.DiaryPath(targetTime, suffix)
+	targetPath, err := internal.DiaryPath(targetTime, cfg.DiaryDir, suffix)
 	if err != nil {
 		return err
 	}
@@ -46,30 +49,10 @@ func EditAction(c *cli.Context) error {
 	}
 
 	// Open text editor
-	return edit(targetPath)
-}
-
-func edit(path string) error {
-	// Open text editor
-	editorEnv := os.Getenv("EDITOR")
-	if editorEnv == "" {
-		editorEnv = "vim"
-	}
-	if err := openEditor(editorEnv, path); err != nil {
-		return fmt.Errorf("Failed open editor. %s", err.Error())
-	}
-	return nil
+	return internal.OpenEditor(cfg.Editor, targetDirPath)
 }
 
 func suffixJoin(val string) string {
 	words := strings.Fields(val)
 	return strings.Join(words, "_")
-}
-
-func openEditor(program string, args ...string) error {
-	c := exec.Command(program, args...)
-	c.Stdin = os.Stdin
-	c.Stdout = os.Stdout
-	c.Stderr = os.Stderr
-	return c.Run()
 }

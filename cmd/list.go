@@ -12,8 +12,12 @@ import (
 )
 
 func ListAction(c *cli.Context) error {
+	cfg, err := internal.GetConfig()
+	if err != nil {
+		return err
+	}
+	diaryDirPath := cfg.DiaryDir
 	now := time.Now()
-	diaryDirPath := internal.DiaryDirPath()
 
 	// Absolute Range
 	targetPaths := []string{}

@@ -10,6 +10,11 @@ import (
 )
 
 func AppendAction(c *cli.Context) error {
+	cfg, err := internal.GetConfig()
+	if err != nil {
+		return err
+	}
+
 	// Getting time for target diary
 	date := c.String("date")
 	before := c.Int("before")
@@ -21,7 +26,7 @@ func AppendAction(c *cli.Context) error {
 
 	// Getting diary path
 	suffix := suffixJoin(c.String("suffix"))
-	targetPath, err := internal.DiaryPath(targetTime, suffix)
+	targetPath, err := internal.DiaryPath(targetTime, cfg.DiaryDir, suffix)
 	if err != nil {
 		return err
 	}
