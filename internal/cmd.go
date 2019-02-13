@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"os/exec"
+	"runtime"
+	"strings"
 
 	"golang.org/x/crypto/ssh/terminal"
 )
@@ -24,4 +27,20 @@ func GetAppendValue(args []string) (string, error) {
 		val = string(b)
 	}
 	return val, nil
+}
+
+func OpenEditor(program string, args ...string) error {
+	cmdargs := strings.Join(args, " ")
+	command := program + " " + cmdargs
+
+	var cmd *exec.Cmd
+	if runtime.GOOS == "windows" {
+		cmd = exec.Command("cmd", "/c", command)
+	} else {
+		cmd = exec.Command("sh", "-c", command)
+	}
+	cmd.Stdin = os.Stdin
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	return cmd.Run()
 }

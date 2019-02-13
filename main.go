@@ -114,6 +114,13 @@ func newApp() *cli.App {
 			Action:  cmd.GrepAction,
 			Flags:   []cli.Flag{},
 		},
+		cli.Command{
+			Name:    "config",
+			Aliases: []string{"c"},
+			Usage:   "modifi config",
+			Action:  cmd.ConfigAction,
+			Flags:   []cli.Flag{},
+		},
 	}
 	// 	app.Action = run
 	return app
