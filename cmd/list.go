@@ -19,22 +19,9 @@ func ListAction(c *cli.Context) error {
 	diaryDirPath := cfg.DiaryDir
 	now := time.Now()
 
-	// Absolute Range
-	targetPaths := []string{}
-	if c.Bool("today") {
-		targetPaths = append(targetPaths, internal.DayPath(now, diaryDirPath))
-	} else if c.Bool("week") {
-		for _, d := range internal.GetWeakDays(now) {
-			targetPaths = append(targetPaths, internal.DayPath(d, diaryDirPath))
-		}
-	} else if c.Bool("month") {
-		targetPaths = append(targetPaths, internal.MonthPath(now, diaryDirPath))
-	} else if c.Bool("year") {
-		targetPaths = append(targetPaths, internal.YearPath(now, diaryDirPath))
-	}
-
 	// Relative Range
 	if c.String("range") != "" {
+		targetPaths := []string{}
 		year, month, day, err := internal.ParseDate(c.String("range"))
 		if err != nil {
 			return err
@@ -46,25 +33,44 @@ func ListAction(c *cli.Context) error {
 		for _, d := range dateRange {
 			targetPaths = append(targetPaths, internal.DayPath(d, diaryDirPath))
 		}
-	}
 
-	diaryPaths := filterMarkdown(dirWalk(diaryDirPath))
+		// Show all list
+		all := filterMarkdown(dirWalk(diaryDirPath))
 
-	// Show all list
-	if len(targetPaths) == 0 {
-		for _, diaryPath := range diaryPaths {
-			fmt.Println(diaryPath)
+		// Show filtering list
+		filteredPaths := []string{}
+		for _, p := range all {
+			for _, targetPath := range targetPaths {
+				if strings.HasPrefix(p, targetPath) {
+					filteredPaths = append(filteredPaths, p)
+				}
+			}
+		}
+
+		// Remove diary home path
+		showPaths := []string{}
+		for _, p := range filteredPaths {
+			showPaths = append(showPaths, strings.TrimPrefix(p, cfg.DiaryDir+"/"))
+		}
+
+		// Show filtering list
+		for _, p := range showPaths {
+			fmt.Println(p)
 		}
 		return nil
 	}
 
-	// Show filtering list
-	for _, diaryPath := range diaryPaths {
-		for _, targetPath := range targetPaths {
-			if strings.HasPrefix(diaryPath, targetPath) {
-				fmt.Println(diaryPath)
-			}
-		}
+	// Show all list
+	all := filterMarkdown(dirWalk(diaryDirPath))
+
+	// Remove diary home path
+	showPaths := []string{}
+	for _, diaryPath := range all {
+		showPaths = append(showPaths, strings.TrimPrefix(diaryPath, cfg.DiaryDir+"/"))
+	}
+
+	for _, diaryPath := range showPaths {
+		fmt.Println(diaryPath)
 	}
 	return nil
 }
