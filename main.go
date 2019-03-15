@@ -42,6 +42,7 @@ func newApp() *cli.App {
 				cli.StringFlag{
 					Name:  "date, d",
 					Usage: "Specified date",
+					Value: "14d",
 				},
 				cli.IntFlag{
 					Name:  "before, b",
@@ -100,7 +101,13 @@ func newApp() *cli.App {
 			Aliases: []string{"g"},
 			Usage:   "grep diary",
 			Action:  cmd.GrepAction,
-			Flags:   []cli.Flag{},
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "range, r",
+					Usage: "relative data range",
+					Value: "14d",
+				},
+			},
 		},
 		cli.Command{
 			Name:    "config",
