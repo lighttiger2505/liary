@@ -42,7 +42,6 @@ func newApp() *cli.App {
 				cli.StringFlag{
 					Name:  "date, d",
 					Usage: "Specified date",
-					Value: "14d",
 				},
 				cli.IntFlag{
 					Name:  "before, b",
