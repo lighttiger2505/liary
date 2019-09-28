@@ -48,8 +48,14 @@ func EditAction(c *cli.Context) error {
 		return err
 	}
 
+	cmdArgs := []string{}
+	if len(cfg.EditorOptions) > 0 {
+		cmdArgs = append(cmdArgs, cfg.EditorOptions...)
+	}
+	cmdArgs = append(cmdArgs, targetPath)
+
 	// Open text editor
-	return internal.OpenEditor(cfg.Editor, targetPath)
+	return internal.OpenEditor(cfg.Editor, cmdArgs...)
 }
 
 func suffixJoin(val string) string {

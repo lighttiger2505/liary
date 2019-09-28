@@ -14,9 +14,10 @@ import (
 var configFilePath = filepath.Join(getXDGConfigPath(runtime.GOOS), "config.yml")
 
 type Config struct {
-	DiaryDir string `yaml:"diarydir"`
-	Editor   string `yaml:"editor"`
-	GrepCmd  string `yaml:"grepcmd"`
+	DiaryDir      string   `yaml:"diarydir"`
+	Editor        string   `yaml:"editor"`
+	EditorOptions []string `yaml:"editoroptions"`
+	GrepCmd       string   `yaml:"grepcmd"`
 }
 
 func GetConfig() (*Config, error) {
