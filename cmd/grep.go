@@ -18,8 +18,8 @@ var GrepCommand = cli.Command{
 	Flags: []cli.Flag{
 		cli.StringFlag{
 			Name:  "range, r",
-			Usage: "relative data range",
-			Value: "14d",
+			Usage: "relative date range",
+			Value: DefaultDateRange,
 		},
 	},
 }

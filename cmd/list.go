@@ -23,7 +23,8 @@ var ListCommand = cli.Command{
 		},
 		cli.StringFlag{
 			Name:  "range, r",
-			Usage: "relative data range",
+			Usage: "relative date range",
+			Value: DefaultDateRange,
 		},
 	},
 }
