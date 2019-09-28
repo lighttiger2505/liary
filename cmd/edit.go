@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"fmt"
 	"path/filepath"
 	"strings"
 
@@ -33,13 +32,6 @@ func EditAction(c *cli.Context) error {
 	targetPath, err := internal.DiaryPath(targetTime, cfg.DiaryDir, suffix)
 	if err != nil {
 		return err
-	}
-
-	// Show diary file path
-	path := c.Bool("path")
-	if path {
-		fmt.Println(targetPath)
-		return nil
 	}
 
 	// Make directory
