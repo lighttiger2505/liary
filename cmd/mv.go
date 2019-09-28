@@ -6,15 +6,17 @@ import (
 	"path/filepath"
 
 	"github.com/lighttiger2505/liary/internal"
+	"github.com/lighttiger2505/liary/internal/ui"
 	"github.com/urfave/cli"
 )
 
 var MoveCommand = cli.Command{
-	Name:    "move",
-	Aliases: []string{"m"},
-	Usage:   "move diary",
-	Action:  MoveAction,
-	Flags:   []cli.Flag{},
+	Name:      "mv",
+	Aliases:   []string{"m"},
+	Usage:     "move diary",
+	UsageText: "liary mv [command options...] <source file> <dist file>",
+	Action:    MoveAction,
+	Flags:     []cli.Flag{},
 }
 
 func MoveAction(c *cli.Context) error {
@@ -22,16 +24,37 @@ func MoveAction(c *cli.Context) error {
 	if err != nil {
 		return err
 	}
-
 	args := c.Args()
-	realSource := filepath.Join(cfg.DiaryDir, args[0])
-	realDist := filepath.Join(cfg.DiaryDir, args[1])
 
-	if !isFileExist(realSource) {
-		return fmt.Errorf("missing source file operand after, '%v'", realSource)
+	// Fetching source file path
+	// Check both absolute and relative paths
+	source := args[0]
+	var absSourcePath string
+	if !filepath.IsAbs(source) {
+		absSourcePath = filepath.Join(cfg.DiaryDir, source)
+	}
+	if !isFileExist(absSourcePath) {
+		return fmt.Errorf("missing source file operand after, '%v'", absSourcePath)
 	}
 
-	if err := os.Rename(realSource, realDist); err != nil {
+	// Fetching dist file path
+	// Check both absolute and relative paths
+	dist := args[1]
+	var absDistPath string
+	if !filepath.IsAbs(dist) {
+		absDistPath = filepath.Join(cfg.DiaryDir, dist)
+	}
+	if isFileExist(absDistPath) {
+		in, err := ui.Ask(fmt.Sprintf("are you sure you want to overwrite this file, '%s'? (y/n)", absDistPath))
+		if err != nil {
+			return err
+		}
+		if !ui.CheckAnswerYes(in) {
+			return nil
+		}
+	}
+
+	if err := os.Rename(absSourcePath, absDistPath); err != nil {
 		return fmt.Errorf("failed move file, '%v'", err.Error())
 	}
 
