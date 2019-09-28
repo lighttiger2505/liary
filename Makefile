@@ -7,27 +7,17 @@ SRCS := $(shell find . -type f -name '*.go')
 LDFLAGS := -ldflags="-s -w -X \"main.version=$(VERSION)\" -X \"main.revision=$(REVISION)\" -X \"main.goversion=$(GOVERSION)\" "
 DIST_DIRS := find * -type d -exec
 
-.PHONY: dep
-dep:
-ifeq ($(shell command -v dep 2> /dev/null),)
-	go get github.com/golang/dep/...
-endif
-
-.PHONY: ensure
-ensure: dep
-	$(GOPATH)/bin/dep ensure
-
 .PHONY: test
 test:
 	go test github.com/lighttiger2505/liary/...
 
 .PHONY: build
 build: $(SRCS)
-	go build $(LDFLAGS) ./...
+	export GO111MODULE=on;go build $(LDFLAGS) ./...
 
 .PHONY: install
 install: $(SRCS)
-	go install $(LDFLAGS) ./...
+	export GO111MODULE=on;go install $(LDFLAGS) ./...
 
 .PHONY: coverage
 coverage:
