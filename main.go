@@ -111,7 +111,7 @@ func newApp() *cli.App {
 		cli.Command{
 			Name:    "config",
 			Aliases: []string{"c"},
-			Usage:   "modifi config",
+			Usage:   "modify config",
 			Action:  cmd.ConfigAction,
 			Flags: []cli.Flag{
 				cli.BoolFlag{
