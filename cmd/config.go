@@ -8,6 +8,23 @@ import (
 	"github.com/urfave/cli"
 )
 
+var ConfigCommand = cli.Command{
+	Name:    "config",
+	Aliases: []string{"c"},
+	Usage:   "modify config",
+	Action:  ConfigAction,
+	Flags: []cli.Flag{
+		cli.BoolFlag{
+			Name:  "edit, e",
+			Usage: "edit config",
+		},
+		cli.StringFlag{
+			Name:  "get",
+			Usage: "get config value",
+		},
+	},
+}
+
 func ConfigAction(c *cli.Context) error {
 	cfg, err := internal.GetConfig()
 	if err != nil {

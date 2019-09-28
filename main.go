@@ -33,105 +33,12 @@ func newApp() *cli.App {
 	app.Author = "lighttiger2505"
 	app.Email = "lighttiger2505@gmail.com"
 	app.Commands = []cli.Command{
-		cli.Command{
-			Name:    "edit",
-			Aliases: []string{"e"},
-			Usage:   "edit diary",
-			Action:  cmd.EditAction,
-			Flags: []cli.Flag{
-				cli.StringFlag{
-					Name:  "date, d",
-					Usage: "Specified date",
-				},
-				cli.IntFlag{
-					Name:  "before, b",
-					Usage: "Specified before diary by day",
-				},
-				cli.IntFlag{
-					Name:  "after, a",
-					Usage: "Specified after diary by day",
-				},
-			},
-		},
-		cli.Command{
-			Name:    "append",
-			Aliases: []string{"a"},
-			Usage:   "grep diary",
-			Action:  cmd.AppendAction,
-			Flags: []cli.Flag{
-				cli.BoolFlag{
-					Name:  "code, c",
-					Usage: "append code block",
-				},
-				cli.StringFlag{
-					Name:  "language, g",
-					Usage: "code block language",
-				},
-				cli.IntFlag{
-					Name:  "before-append, B",
-					Usage: "NUM of blank line to add before content to be append",
-					Value: 1,
-				},
-				cli.IntFlag{
-					Name:  "after-append, A",
-					Usage: "NUM of blank line to add after content to be append",
-					Value: 1,
-				},
-			},
-		},
-		cli.Command{
-			Name:    "list",
-			Aliases: []string{"l"},
-			Usage:   "list diary",
-			Action:  cmd.ListAction,
-			Flags: []cli.Flag{
-				cli.BoolFlag{
-					Name:  "fullpath, f",
-					Usage: "list only this year",
-				},
-				cli.StringFlag{
-					Name:  "range, r",
-					Usage: "relative data range",
-				},
-			},
-		},
-		cli.Command{
-			Name:    "grep",
-			Aliases: []string{"g"},
-			Usage:   "grep diary",
-			Action:  cmd.GrepAction,
-			Flags: []cli.Flag{
-				cli.StringFlag{
-					Name:  "range, r",
-					Usage: "relative data range",
-					Value: "14d",
-				},
-			},
-		},
-		cli.Command{
-			Name:    "config",
-			Aliases: []string{"c"},
-			Usage:   "modify config",
-			Action:  cmd.ConfigAction,
-			Flags: []cli.Flag{
-				cli.BoolFlag{
-					Name:  "edit, e",
-					Usage: "edit config",
-				},
-				cli.StringFlag{
-					Name:  "get",
-					Usage: "get config value",
-				},
-			},
-		},
-		cli.Command{
-			Name:    "move",
-			Aliases: []string{"m"},
-			Usage:   "move diary",
-			Action:  cmd.MoveAction,
-			Flags:   []cli.Flag{},
-		},
+		cmd.EditCommand,
+		cmd.AppendCommand,
+		cmd.ListCommand,
+		cmd.GrepCommand,
+		cmd.ConfigCommand,
+		cmd.MoveCommand,
 	}
-	// 	app.Action = run
 	return app
 }

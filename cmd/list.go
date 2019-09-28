@@ -11,6 +11,23 @@ import (
 	"github.com/urfave/cli"
 )
 
+var ListCommand = cli.Command{
+	Name:    "list",
+	Aliases: []string{"l"},
+	Usage:   "list diary",
+	Action:  ListAction,
+	Flags: []cli.Flag{
+		cli.BoolFlag{
+			Name:  "fullpath, f",
+			Usage: "list only this year",
+		},
+		cli.StringFlag{
+			Name:  "range, r",
+			Usage: "relative data range",
+		},
+	},
+}
+
 func ListAction(c *cli.Context) error {
 	cfg, err := internal.GetConfig()
 	if err != nil {

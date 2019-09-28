@@ -9,6 +9,33 @@ import (
 	"github.com/urfave/cli"
 )
 
+var AppendCommand = cli.Command{
+	Name:    "append",
+	Aliases: []string{"a"},
+	Usage:   "grep diary",
+	Action:  AppendAction,
+	Flags: []cli.Flag{
+		cli.BoolFlag{
+			Name:  "code, c",
+			Usage: "append code block",
+		},
+		cli.StringFlag{
+			Name:  "language, g",
+			Usage: "code block language",
+		},
+		cli.IntFlag{
+			Name:  "before-append, B",
+			Usage: "NUM of blank line to add before content to be append",
+			Value: 1,
+		},
+		cli.IntFlag{
+			Name:  "after-append, A",
+			Usage: "NUM of blank line to add after content to be append",
+			Value: 1,
+		},
+	},
+}
+
 func AppendAction(c *cli.Context) error {
 	cfg, err := internal.GetConfig()
 	if err != nil {

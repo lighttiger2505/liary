@@ -10,6 +10,20 @@ import (
 	"github.com/urfave/cli"
 )
 
+var GrepCommand = cli.Command{
+	Name:    "grep",
+	Aliases: []string{"g"},
+	Usage:   "grep diary",
+	Action:  GrepAction,
+	Flags: []cli.Flag{
+		cli.StringFlag{
+			Name:  "range, r",
+			Usage: "relative data range",
+			Value: "14d",
+		},
+	},
+}
+
 func GrepAction(c *cli.Context) error {
 	if len(c.Args()) == 0 {
 		return errors.New("The required arguments were not provided: <pattern>")

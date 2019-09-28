@@ -8,6 +8,27 @@ import (
 	"github.com/urfave/cli"
 )
 
+var EditCommand = cli.Command{
+	Name:    "edit",
+	Aliases: []string{"e"},
+	Usage:   "edit diary",
+	Action:  EditAction,
+	Flags: []cli.Flag{
+		cli.StringFlag{
+			Name:  "date, d",
+			Usage: "Specified date",
+		},
+		cli.IntFlag{
+			Name:  "before, b",
+			Usage: "Specified before diary by day",
+		},
+		cli.IntFlag{
+			Name:  "after, a",
+			Usage: "Specified after diary by day",
+		},
+	},
+}
+
 func EditAction(c *cli.Context) error {
 	cfg, err := internal.GetConfig()
 	if err != nil {

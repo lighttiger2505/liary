@@ -9,6 +9,14 @@ import (
 	"github.com/urfave/cli"
 )
 
+var MoveCommand = cli.Command{
+	Name:    "move",
+	Aliases: []string{"m"},
+	Usage:   "move diary",
+	Action:  MoveAction,
+	Flags:   []cli.Flag{},
+}
+
 func MoveAction(c *cli.Context) error {
 	cfg, err := internal.GetConfig()
 	if err != nil {
