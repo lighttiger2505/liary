@@ -49,8 +49,12 @@ func ListAction(c *cli.Context) error {
 
 		// Remove diary home path
 		showPaths := []string{}
-		for _, p := range filteredPaths {
-			showPaths = append(showPaths, strings.TrimPrefix(p, cfg.DiaryDir+"/"))
+		if c.Bool("fullpath") {
+			showPaths = filteredPaths
+		} else {
+			for _, diaryPath := range filteredPaths {
+				showPaths = append(showPaths, strings.TrimPrefix(diaryPath, cfg.DiaryDir+"/"))
+			}
 		}
 
 		// Show filtering list
@@ -65,8 +69,12 @@ func ListAction(c *cli.Context) error {
 
 	// Remove diary home path
 	showPaths := []string{}
-	for _, diaryPath := range all {
-		showPaths = append(showPaths, strings.TrimPrefix(diaryPath, cfg.DiaryDir+"/"))
+	if c.Bool("fullpath") {
+		showPaths = all
+	} else {
+		for _, diaryPath := range all {
+			showPaths = append(showPaths, strings.TrimPrefix(diaryPath, cfg.DiaryDir+"/"))
+		}
 	}
 
 	for _, diaryPath := range showPaths {
