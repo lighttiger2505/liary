@@ -124,6 +124,13 @@ func newApp() *cli.App {
 				},
 			},
 		},
+		cli.Command{
+			Name:    "move",
+			Aliases: []string{"m"},
+			Usage:   "move diary",
+			Action:  cmd.MoveAction,
+			Flags:   []cli.Flag{},
+		},
 	}
 	// 	app.Action = run
 	return app
