@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"path/filepath"
 	"strings"
 
@@ -15,16 +16,20 @@ var EditCommand = cli.Command{
 	Action:  EditAction,
 	Flags: []cli.Flag{
 		cli.StringFlag{
+			Name:  "file, f",
+			Usage: "Open specified file",
+		},
+		cli.StringFlag{
 			Name:  "date, d",
-			Usage: "Specified date",
+			Usage: "Open specified date diary",
 		},
 		cli.IntFlag{
 			Name:  "before, b",
-			Usage: "Specified before diary by day",
+			Usage: "Open specified before diary by day",
 		},
 		cli.IntFlag{
 			Name:  "after, a",
-			Usage: "Specified after diary by day",
+			Usage: "Open specified after diary by day",
 		},
 	},
 }
@@ -35,22 +40,7 @@ func EditAction(c *cli.Context) error {
 		return err
 	}
 
-	// Getting time for target diary
-	date := c.String("date")
-	before := c.Int("before")
-	after := c.Int("after")
-	targetTime, err := internal.GetTargetTime(date, before, after)
-	if err != nil {
-		return err
-	}
-
-	// Getting diary path
-	suffix := ""
-	args := c.Args()
-	if len(args) > 0 {
-		suffix = suffixJoin(args[0])
-	}
-	targetPath, err := internal.DiaryPath(targetTime, cfg.DiaryDir, suffix)
+	targetPath, err := getTargetPath(c, cfg)
 	if err != nil {
 		return err
 	}
@@ -69,6 +59,46 @@ func EditAction(c *cli.Context) error {
 
 	// Open text editor
 	return internal.OpenEditor(cfg.Editor, cmdArgs...)
+}
+
+func getTargetPath(c *cli.Context, cfg *internal.Config) (string, error) {
+	file := c.String("file")
+	if file != "" {
+
+		var absSourcePath string
+		if !filepath.IsAbs(file) {
+			absSourcePath = filepath.Join(cfg.DiaryDir, file)
+		} else {
+			absSourcePath = file
+		}
+
+		if !internal.IsFileExist(absSourcePath) {
+			return "", fmt.Errorf("missing target file operand after, '%v'", absSourcePath)
+		}
+		return absSourcePath, nil
+	}
+
+	// Getting time for target diary
+	date := c.String("date")
+	before := c.Int("before")
+	after := c.Int("after")
+	targetTime, err := internal.GetTargetTime(date, before, after)
+	if err != nil {
+		return "", err
+	}
+
+	// Getting diary path
+	suffix := ""
+	args := c.Args()
+	if len(args) > 0 {
+		suffix = suffixJoin(args[0])
+	}
+	targetPath, err := internal.DiaryPath(targetTime, cfg.DiaryDir, suffix)
+	if err != nil {
+		return "", err
+	}
+
+	return targetPath, nil
 }
 
 func suffixJoin(val string) string {

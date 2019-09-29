@@ -7,13 +7,13 @@ import (
 	"path/filepath"
 )
 
-func isFileExist(fPath string) bool {
+func IsFileExist(fPath string) bool {
 	_, err := os.Stat(fPath)
 	return err == nil || !os.IsNotExist(err)
 }
 
 func MakeFile(fPath string) error {
-	if !isFileExist(fPath) {
+	if !IsFileExist(fPath) {
 		err := ioutil.WriteFile(fPath, []byte(""), 0644)
 		if err != nil {
 			return fmt.Errorf("Failed make diary file. %v", err.Error())
@@ -23,7 +23,7 @@ func MakeFile(fPath string) error {
 }
 
 func MakeDir(dPath string) error {
-	if !isFileExist(dPath) {
+	if !IsFileExist(dPath) {
 		if err := os.MkdirAll(dPath, 0755); err != nil {
 			return fmt.Errorf("Failed make diary dir. %s", err.Error())
 		}

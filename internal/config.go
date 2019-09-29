@@ -37,7 +37,7 @@ func (c *Config) Read() (string, error) {
 		return "", fmt.Errorf("cannot create directory, %s", err)
 	}
 
-	if !isFileExist(configFilePath) {
+	if !IsFileExist(configFilePath) {
 		_, err := os.Create(configFilePath)
 		if err != nil {
 			return "", fmt.Errorf("cannot create config, %s", err.Error())
@@ -63,7 +63,7 @@ func (c *Config) Load() error {
 		return fmt.Errorf("cannot create directory, %s", err)
 	}
 
-	if !isFileExist(configFilePath) {
+	if !IsFileExist(configFilePath) {
 		if err := createNewConfig(); err != nil {
 			return err
 		}
