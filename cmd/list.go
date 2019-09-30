@@ -39,28 +39,34 @@ func ListAction(c *cli.Context) error {
 		return err
 	}
 
-	diaryList := filterMarkdown(dirWalk(cfg.DiaryDir))
-	if !c.Bool("all") {
-		filterdList, err := filterDateRange(diaryList, cfg.DiaryDir, c.String("range"))
+	paths, err := GetDiaryList(cfg.DiaryDir, c.Bool("all"), c.Bool("fullpath"), c.String("range"))
+	if err != nil {
+		return err
+	}
+
+	for _, p := range paths {
+		fmt.Println(p)
+	}
+	return nil
+}
+
+func GetDiaryList(diaryDirPath string, isAll bool, isFullPath bool, dateRangeString string) ([]string, error) {
+	diaryList := filterMarkdown(dirWalk(diaryDirPath))
+	if !isAll {
+		filterdList, err := filterDateRange(diaryList, diaryDirPath, dateRangeString)
 		if err != nil {
-			return err
+			return nil, err
 		}
 		diaryList = filterdList
 	}
 
-	showPaths := []string{}
-	if c.Bool("fullpath") {
-		showPaths = diaryList
-	} else {
+	showPaths := diaryList
+	if !isFullPath {
 		for _, diaryPath := range diaryList {
-			showPaths = append(showPaths, strings.TrimPrefix(diaryPath, cfg.DiaryDir+"/"))
+			showPaths = append(showPaths, strings.TrimPrefix(diaryPath, diaryDirPath+"/"))
 		}
 	}
-
-	for _, p := range showPaths {
-		fmt.Println(p)
-	}
-	return nil
+	return showPaths, nil
 }
 
 func filterDateRange(base []string, diaryDirPath string, dateRangeString string) ([]string, error) {
