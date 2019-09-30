@@ -65,7 +65,6 @@ func EditAction(c *cli.Context) error {
 func getTargetPath(c *cli.Context, cfg *internal.Config) (string, error) {
 	file := c.String("file")
 	if file != "" {
-
 		var absSourcePath string
 		if !filepath.IsAbs(file) {
 			absSourcePath = filepath.Join(cfg.DiaryDir, file)
@@ -98,7 +97,6 @@ func getTargetPath(c *cli.Context, cfg *internal.Config) (string, error) {
 	if err != nil {
 		return "", err
 	}
-
 	return targetPath, nil
 }
 
