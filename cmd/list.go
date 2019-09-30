@@ -26,6 +26,10 @@ var ListCommand = cli.Command{
 			Usage: "relative date range",
 			Value: DefaultDateRange,
 		},
+		cli.BoolFlag{
+			Name:  "all, a",
+			Usage: "show all diary's",
+		},
 	},
 }
 
@@ -34,71 +38,57 @@ func ListAction(c *cli.Context) error {
 	if err != nil {
 		return err
 	}
-	diaryDirPath := cfg.DiaryDir
-	now := time.Now()
 
-	// Relative Range
-	if c.String("range") != "" {
-		targetPaths := []string{}
-		year, month, day, err := internal.ParseDate(c.String("range"))
+	diaryList := filterMarkdown(dirWalk(cfg.DiaryDir))
+	if !c.Bool("all") {
+		filterdList, err := filterDateRange(diaryList, cfg.DiaryDir, c.String("range"))
 		if err != nil {
 			return err
 		}
-		start := now.AddDate(-1*year, -1*month, -1*day)
-		dateRange := internal.GetDateRange(start, now)
-
-		targetPaths = []string{}
-		for _, d := range dateRange {
-			targetPaths = append(targetPaths, internal.DayPath(d, diaryDirPath))
-		}
-
-		// Show all list
-		all := filterMarkdown(dirWalk(diaryDirPath))
-
-		// Show filtering list
-		filteredPaths := []string{}
-		for _, p := range all {
-			for _, targetPath := range targetPaths {
-				if strings.HasPrefix(p, targetPath) {
-					filteredPaths = append(filteredPaths, p)
-				}
-			}
-		}
-
-		// Remove diary home path
-		showPaths := []string{}
-		if c.Bool("fullpath") {
-			showPaths = filteredPaths
-		} else {
-			for _, diaryPath := range filteredPaths {
-				showPaths = append(showPaths, strings.TrimPrefix(diaryPath, cfg.DiaryDir+"/"))
-			}
-		}
-
-		// Show filtering list
-		for _, p := range showPaths {
-			fmt.Println(p)
-		}
-		return nil
+		diaryList = filterdList
 	}
 
-	// Show all list
-	all := filterMarkdown(dirWalk(diaryDirPath))
-
-	// Remove diary home path
 	showPaths := []string{}
 	if c.Bool("fullpath") {
-		showPaths = all
+		showPaths = diaryList
 	} else {
-		for _, diaryPath := range all {
+		for _, diaryPath := range diaryList {
 			showPaths = append(showPaths, strings.TrimPrefix(diaryPath, cfg.DiaryDir+"/"))
 		}
 	}
 
-	for _, diaryPath := range showPaths {
-		fmt.Println(diaryPath)
+	for _, p := range showPaths {
+		fmt.Println(p)
 	}
 	return nil
+}
+
+func filterDateRange(base []string, diaryDirPath string, dateRangeString string) ([]string, error) {
+	targetPaths := []string{}
+	year, month, day, err := internal.ParseDate(dateRangeString)
+	if err != nil {
+		return nil, err
+	}
+	now := time.Now()
+	start := now.AddDate(-1*year, -1*month, -1*day)
+	dateRange := internal.GetDateRange(start, now)
+
+	targetPaths = []string{}
+	for _, d := range dateRange {
+		targetPaths = append(targetPaths, internal.DayPath(d, diaryDirPath))
+	}
+
+	// Show filtering list
+	filteredPaths := []string{}
+	for _, p := range base {
+		for _, targetPath := range targetPaths {
+			if strings.HasPrefix(p, targetPath) {
+				filteredPaths = append(filteredPaths, p)
+			}
+		}
+	}
+
+	return filteredPaths, nil
 }
 
 func dirWalk(dir string) []string {
