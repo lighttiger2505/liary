@@ -10,10 +10,11 @@ import (
 )
 
 var EditCommand = cli.Command{
-	Name:    "edit",
-	Aliases: []string{"e"},
-	Usage:   "edit diary",
-	Action:  EditAction,
+	Name:      "edit",
+	Aliases:   []string{"e"},
+	Usage:     "edit diary",
+	UsageText: "liary mv [command options...] <file suffix>",
+	Action:    EditAction,
 	Flags: []cli.Flag{
 		cli.StringFlag{
 			Name:  "file, f",
