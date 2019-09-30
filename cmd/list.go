@@ -71,7 +71,6 @@ func GetDiaryList(diaryDirPath string, isAll bool, isFullPath bool, dateRangeStr
 }
 
 func filterDateRange(base []string, diaryDirPath string, dateRangeString string) ([]string, error) {
-	targetPaths := []string{}
 	year, month, day, err := internal.ParseDate(dateRangeString)
 	if err != nil {
 		return nil, err
@@ -80,7 +79,7 @@ func filterDateRange(base []string, diaryDirPath string, dateRangeString string)
 	start := now.AddDate(-1*year, -1*month, -1*day)
 	dateRange := internal.GetDateRange(start, now)
 
-	targetPaths = []string{}
+	targetPaths := []string{}
 	for _, d := range dateRange {
 		targetPaths = append(targetPaths, internal.DayPath(d, diaryDirPath))
 	}
