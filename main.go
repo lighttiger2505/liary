@@ -36,6 +36,7 @@ func newApp() *cli.App {
 		cmd.EditCommand,
 		cmd.AppendCommand,
 		cmd.ListCommand,
+		cmd.FindCommand,
 		cmd.GrepCommand,
 		cmd.ConfigCommand,
 		cmd.MoveCommand,
