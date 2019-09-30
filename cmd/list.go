@@ -62,6 +62,7 @@ func GetDiaryList(diaryDirPath string, isAll bool, isFullPath bool, dateRangeStr
 
 	showPaths := diaryList
 	if !isFullPath {
+		showPaths = []string{}
 		for _, diaryPath := range diaryList {
 			showPaths = append(showPaths, strings.TrimPrefix(diaryPath, diaryDirPath+"/"))
 		}
