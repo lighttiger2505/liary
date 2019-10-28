@@ -32,6 +32,10 @@ var EditCommand = cli.Command{
 			Name:  "after, a",
 			Usage: "Open specified after diary by day",
 		},
+		cli.StringFlag{
+			Name:  "subdir, s",
+			Usage: "subdir",
+		},
 	},
 }
 
@@ -40,7 +44,6 @@ func EditAction(c *cli.Context) error {
 	if err != nil {
 		return err
 	}
-
 
 	var targetPath string
 	file := c.String("file")
@@ -51,7 +54,13 @@ func EditAction(c *cli.Context) error {
 		}
 		targetPath = p
 	} else {
-		p, err := getTargetPath(c, cfg.DiaryDir)
+		diaryDir := cfg.DiaryDir
+		subDir := c.String("subdir")
+		if subDir != "" {
+			diaryDir = filepath.Join(diaryDir, subDir)
+		}
+
+		p, err := getTargetPath(c, diaryDir)
 		if err != nil {
 			return err
 		}
