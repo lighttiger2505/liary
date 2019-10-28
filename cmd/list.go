@@ -2,8 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"io/ioutil"
-	"path/filepath"
 	"strings"
 	"time"
 
@@ -51,7 +49,7 @@ func ListAction(c *cli.Context) error {
 }
 
 func GetDiaryList(diaryDirPath string, isAll bool, isFullPath bool, dateRangeString string) ([]string, error) {
-	diaryList := filterMarkdown(dirWalk(diaryDirPath))
+	diaryList := filterMarkdown(internal.Walk(diaryDirPath))
 	if !isAll {
 		filterdList, err := filterDateRange(diaryList, diaryDirPath, dateRangeString)
 		if err != nil {
@@ -95,22 +93,4 @@ func filterDateRange(base []string, diaryDirPath string, dateRangeString string)
 	}
 
 	return filteredPaths, nil
-}
-
-func dirWalk(dir string) []string {
-	files, err := ioutil.ReadDir(dir)
-	if err != nil {
-		panic(err)
-	}
-
-	var paths []string
-	for _, file := range files {
-		if file.IsDir() {
-			paths = append(paths, dirWalk(filepath.Join(dir, file.Name()))...)
-			continue
-		}
-		paths = append(paths, filepath.Join(dir, file.Name()))
-	}
-
-	return paths
 }

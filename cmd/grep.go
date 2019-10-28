@@ -53,7 +53,7 @@ func GrepAction(c *cli.Context) error {
 		}
 
 		// Show all list
-		all := filterMarkdown(dirWalk(cfg.DiaryDir))
+		all := filterMarkdown(internal.Walk(cfg.DiaryDir))
 
 		// Show filtering list
 		for _, p := range all {
@@ -64,7 +64,7 @@ func GrepAction(c *cli.Context) error {
 			}
 		}
 	} else {
-		files = dirWalk(cfg.DiaryDir)
+		files = internal.Walk(cfg.DiaryDir)
 	}
 
 	if len(files) == 0 {
