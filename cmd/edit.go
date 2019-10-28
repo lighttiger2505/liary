@@ -41,9 +41,21 @@ func EditAction(c *cli.Context) error {
 		return err
 	}
 
-	targetPath, err := getTargetPath(c, cfg)
-	if err != nil {
-		return err
+
+	var targetPath string
+	file := c.String("file")
+	if file != "" {
+		p, err := getTargetPathWithFile(cfg.DiaryDir, file)
+		if err != nil {
+			return err
+		}
+		targetPath = p
+	} else {
+		p, err := getTargetPath(c, cfg.DiaryDir)
+		if err != nil {
+			return err
+		}
+		targetPath = p
 	}
 
 	// Make directory
@@ -62,22 +74,21 @@ func EditAction(c *cli.Context) error {
 	return internal.OpenEditor(cfg.Editor, cmdArgs...)
 }
 
-func getTargetPath(c *cli.Context, cfg *internal.Config) (string, error) {
-	file := c.String("file")
-	if file != "" {
-		var absSourcePath string
-		if !filepath.IsAbs(file) {
-			absSourcePath = filepath.Join(cfg.DiaryDir, file)
-		} else {
-			absSourcePath = file
-		}
-
-		if !internal.IsFileExist(absSourcePath) {
-			return "", fmt.Errorf("missing target file operand after, '%v'", absSourcePath)
-		}
-		return absSourcePath, nil
+func getTargetPathWithFile(diaryDir, file string) (string, error) {
+	var absSourcePath string
+	if !filepath.IsAbs(file) {
+		absSourcePath = filepath.Join(diaryDir, file)
+	} else {
+		absSourcePath = file
 	}
 
+	if !internal.IsFileExist(absSourcePath) {
+		return "", fmt.Errorf("missing target file operand after, '%v'", absSourcePath)
+	}
+	return absSourcePath, nil
+}
+
+func getTargetPath(c *cli.Context, diaryDir string) (string, error) {
 	// Getting time for target diary
 	date := c.String("date")
 	before := c.Int("before")
@@ -93,7 +104,7 @@ func getTargetPath(c *cli.Context, cfg *internal.Config) (string, error) {
 	if len(args) > 0 {
 		suffix = suffixJoin(args[0])
 	}
-	targetPath, err := internal.DiaryPath(targetTime, cfg.DiaryDir, suffix)
+	targetPath, err := internal.DiaryPath(targetTime, diaryDir, suffix)
 	if err != nil {
 		return "", err
 	}
