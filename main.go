@@ -41,5 +41,11 @@ func newApp() *cli.App {
 		cmd.ConfigCommand,
 		cmd.MoveCommand,
 	}
+	app.Flags = []cli.Flag{
+		cli.StringFlag{
+			Name:  "workspace",
+			Usage: "Target workspace",
+		},
+	}
 	return app
 }

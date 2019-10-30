@@ -14,10 +14,11 @@ import (
 var configFilePath = filepath.Join(getXDGConfigPath(runtime.GOOS), "config.yml")
 
 type Config struct {
-	DiaryDir      string   `yaml:"diarydir"`
-	Editor        string   `yaml:"editor"`
-	EditorOptions []string `yaml:"editoroptions"`
-	GrepCmd       string   `yaml:"grepcmd"`
+	DiaryDir      string            `yaml:"diarydir"`
+	Editor        string            `yaml:"editor"`
+	EditorOptions []string          `yaml:"editoroptions"`
+	WorkSpaces    map[string]string `yaml:"workspaces"`
+	GrepCmd       string            `yaml:"grepcmd"`
 }
 
 func GetConfig() (*Config, error) {
@@ -122,6 +123,7 @@ func createNewConfig() error {
 	configPath := getXDGConfigPath(runtime.GOOS)
 	diaryDirPath := filepath.Join(configPath, "_post")
 	cfg.DiaryDir = diaryDirPath
+	cfg.WorkSpaces["default"] = diaryDirPath
 
 	editor := os.Getenv("EDITOR")
 	if editor == "" {

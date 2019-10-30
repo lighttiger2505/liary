@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 	"path/filepath"
 	"strings"
 
@@ -41,16 +42,27 @@ func EditAction(c *cli.Context) error {
 		return err
 	}
 
+	fmt.Println(c.GlobalFlagNames())
+	workspace := cfg.DiaryDir
+	workspaceFlag := c.GlobalString("workspace")
+	if workspaceFlag != "" {
+		w, err := getWorkSpace(cfg.WorkSpaces, workspaceFlag)
+		if err != nil {
+			return err
+		}
+		workspace = w
+	}
+
 	var targetPath string
 	file := c.String("file")
 	if file != "" {
-		p, err := getTargetPathWithFile(cfg.DiaryDir, file)
+		p, err := getTargetPathWithFile(workspace, file)
 		if err != nil {
 			return err
 		}
 		targetPath = p
 	} else {
-		p, err := getTargetPath(c, cfg.DiaryDir)
+		p, err := getTargetPath(c, workspace)
 		if err != nil {
 			return err
 		}
@@ -113,4 +125,33 @@ func getTargetPath(c *cli.Context, diaryDir string) (string, error) {
 func suffixJoin(val string) string {
 	words := strings.Fields(val)
 	return strings.Join(words, "_")
+}
+
+func getWorkSpace(workspaces map[string]string, name string) (string, error) {
+	if len(workspaces) == 0 {
+		return "", fmt.Errorf("Not set workspace")
+	}
+
+	workspace, ok := workspaces[name]
+	if !ok {
+		return "", fmt.Errorf("Not found workspace, %s", name)
+	}
+	if !internal.IsFileExist(workspace) {
+		return "", fmt.Errorf("No such directory, %s", workspace)
+	}
+
+	f, err := os.Open(workspace)
+	if err != nil {
+		return "", err
+	}
+	defer f.Close()
+	fs, err := os.Stat(workspace)
+	if err != nil {
+		return "", err
+	}
+	if !fs.IsDir() {
+		return "", fmt.Errorf("Workspace not directory, %s", workspace)
+	}
+
+	return workspace, nil
 }
