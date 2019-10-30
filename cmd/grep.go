@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"errors"
-	"sort"
 	"strings"
 	"time"
 
@@ -53,7 +52,7 @@ func GrepAction(c *cli.Context) error {
 		}
 
 		// Show all list
-		all := filterMarkdown(internal.Walk(cfg.DiaryDir))
+		all := internal.FilterMarkdown(internal.Walk(cfg.DiaryDir))
 
 		// Show filtering list
 		for _, p := range all {
@@ -71,18 +70,18 @@ func GrepAction(c *cli.Context) error {
 		return errors.New("Not found diary file")
 	}
 
-	files = filterMarkdown(files)
+	files = internal.FilterMarkdown(files)
 
 	return internal.GrepFiles(cfg.GrepCmd, c.Args().First(), files...)
 }
 
-func filterMarkdown(files []string) []string {
-	var newfiles []string
-	for _, file := range files {
-		if strings.HasSuffix(file, ".md") {
-			newfiles = append(newfiles, file)
-		}
-	}
-	sort.Sort(sort.Reverse(sort.StringSlice(newfiles)))
-	return newfiles
-}
+// func filterMarkdown(files []string) []string {
+// 	var newfiles []string
+// 	for _, file := range files {
+// 		if strings.HasSuffix(file, ".md") {
+// 			newfiles = append(newfiles, file)
+// 		}
+// 	}
+// 	sort.Sort(sort.Reverse(sort.StringSlice(newfiles)))
+// 	return newfiles
+// }

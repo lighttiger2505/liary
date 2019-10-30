@@ -51,7 +51,7 @@ func FindAction(c *cli.Context) error {
 }
 
 func fuzzyFindDiary(c *cli.Context, cfg *internal.Config) (string, error) {
-	paths, err := GetDiaryList(cfg.DiaryDir, false, false, c.String("range"))
+	paths, err := internal.GetDiaryList(cfg.DiaryDir, false, false, c.String("range"))
 	if err != nil {
 		return "", err
 	}

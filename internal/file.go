@@ -5,6 +5,8 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"sort"
+	"strings"
 )
 
 func IsFileExist(fPath string) bool {
@@ -63,4 +65,15 @@ func Walk(dir string) []string {
 	}
 
 	return paths
+}
+
+func FilterMarkdown(files []string) []string {
+	var newfiles []string
+	for _, file := range files {
+		if strings.HasSuffix(file, ".md") {
+			newfiles = append(newfiles, file)
+		}
+	}
+	sort.Sort(sort.Reverse(sort.StringSlice(newfiles)))
+	return newfiles
 }
