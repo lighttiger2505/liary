@@ -35,7 +35,7 @@ func FindAction(c *cli.Context) error {
 		return err
 	}
 
-	p, err := fuzzyFindDiary(c, cfg)
+	p, err := fuzzyFindDiary(c, cfg.DiaryDir)
 	if err != nil {
 		return err
 	}
@@ -50,8 +50,8 @@ func FindAction(c *cli.Context) error {
 	return internal.OpenEditor(cfg.Editor, cmdArgs...)
 }
 
-func fuzzyFindDiary(c *cli.Context, cfg *internal.Config) (string, error) {
-	paths, err := internal.GetDiaryList(cfg.DiaryDir, false, false, c.String("range"))
+func fuzzyFindDiary(c *cli.Context, workspace string) (string, error) {
+	paths, err := internal.GetDiaryList(workspace, false, false, c.String("range"))
 	if err != nil {
 		return "", err
 	}
@@ -66,7 +66,7 @@ func fuzzyFindDiary(c *cli.Context, cfg *internal.Config) (string, error) {
 				return ""
 			}
 
-			f, err := os.Open(filepath.Join(cfg.DiaryDir, paths[i]))
+			f, err := os.Open(filepath.Join(workspace, paths[i]))
 			if err != nil {
 				return "file open error..."
 			}
@@ -86,5 +86,5 @@ func fuzzyFindDiary(c *cli.Context, cfg *internal.Config) (string, error) {
 		}
 		return "", err
 	}
-	return filepath.Join(cfg.DiaryDir, paths[index]), nil
+	return filepath.Join(workspace, paths[index]), nil
 }
