@@ -26,12 +26,22 @@ func MoveAction(c *cli.Context) error {
 	}
 	args := c.Args()
 
+	workspace := cfg.DiaryDir
+	workspaceFlag := c.GlobalString("workspace")
+	if workspaceFlag != "" {
+		w, err := cfg.GetWorkSpace(workspaceFlag)
+		if err != nil {
+			return err
+		}
+		workspace = w
+	}
+
 	// Fetching source file path
 	// Check both absolute and relative paths
 	source := args[0]
 	var absSourcePath string
 	if !filepath.IsAbs(source) {
-		absSourcePath = filepath.Join(cfg.DiaryDir, source)
+		absSourcePath = filepath.Join(workspace, source)
 	}
 	if !isFileExist(absSourcePath) {
 		return fmt.Errorf("missing source file operand after, '%v'", absSourcePath)
@@ -42,7 +52,7 @@ func MoveAction(c *cli.Context) error {
 	dist := args[1]
 	var absDistPath string
 	if !filepath.IsAbs(dist) {
-		absDistPath = filepath.Join(cfg.DiaryDir, dist)
+		absDistPath = filepath.Join(workspace, dist)
 	}
 	if isFileExist(absDistPath) {
 		in, err := ui.Ask(fmt.Sprintf("are you sure you want to overwrite this file, '%s'? (y/n)", absDistPath))
