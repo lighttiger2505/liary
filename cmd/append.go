@@ -51,9 +51,19 @@ func AppendAction(c *cli.Context) error {
 		return err
 	}
 
+	workspace := cfg.DiaryDir
+	workspaceFlag := c.GlobalString("workspace")
+	if workspaceFlag != "" {
+		w, err := cfg.GetWorkSpace(workspaceFlag)
+		if err != nil {
+			return err
+		}
+		workspace = w
+	}
+
 	// Getting diary path
 	suffix := suffixJoin(c.String("suffix"))
-	targetPath, err := internal.DiaryPath(targetTime, cfg.DiaryDir, suffix)
+	targetPath, err := internal.DiaryPath(targetTime, workspace, suffix)
 	if err != nil {
 		return err
 	}
