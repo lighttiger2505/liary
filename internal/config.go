@@ -87,6 +87,35 @@ func (c *Config) Load() error {
 	return nil
 }
 
+func (c *Config) GetWorkSpace(name string) (string, error) {
+	if len(c.WorkSpaces) == 0 {
+		return "", fmt.Errorf("Not set workspace")
+	}
+
+	workspace, ok := c.WorkSpaces[name]
+	if !ok {
+		return "", fmt.Errorf("Not found workspace, %s", name)
+	}
+	if !IsFileExist(workspace) {
+		return "", fmt.Errorf("No such directory, %s", workspace)
+	}
+
+	f, err := os.Open(workspace)
+	if err != nil {
+		return "", err
+	}
+	defer f.Close()
+	fs, err := os.Stat(workspace)
+	if err != nil {
+		return "", err
+	}
+	if !fs.IsDir() {
+		return "", fmt.Errorf("Workspace not directory, %s", workspace)
+	}
+
+	return workspace, nil
+}
+
 func (c *Config) Save() error {
 	file, err := os.OpenFile(configFilePath, os.O_WRONLY, 0666)
 	if err != nil {
