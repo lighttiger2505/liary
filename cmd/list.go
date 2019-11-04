@@ -35,7 +35,17 @@ func ListAction(c *cli.Context) error {
 		return err
 	}
 
-	paths, err := internal.GetDiaryList(cfg.DiaryDir, c.Bool("all"), c.Bool("fullpath"), c.String("range"))
+	workspace := cfg.DiaryDir
+	workspaceFlag := c.GlobalString("workspace")
+	if workspaceFlag != "" {
+		w, err := cfg.GetWorkSpace(workspaceFlag)
+		if err != nil {
+			return err
+		}
+		workspace = w
+	}
+
+	paths, err := internal.GetDiaryList(workspace, c.Bool("all"), c.Bool("fullpath"), c.String("range"))
 	if err != nil {
 		return err
 	}
