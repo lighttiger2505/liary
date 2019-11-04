@@ -33,7 +33,15 @@ func GrepAction(c *cli.Context) error {
 		return err
 	}
 
-	now := time.Now()
+	workspace := cfg.DiaryDir
+	workspaceFlag := c.GlobalString("workspace")
+	if workspaceFlag != "" {
+		w, err := cfg.GetWorkSpace(workspaceFlag)
+		if err != nil {
+			return err
+		}
+		workspace = w
+	}
 
 	// Relative Range
 	files := []string{}
@@ -43,16 +51,17 @@ func GrepAction(c *cli.Context) error {
 		if err != nil {
 			return err
 		}
+		now := time.Now()
 		start := now.AddDate(-1*year, -1*month, -1*day)
 		dateRange := internal.GetDateRange(start, now)
 
 		targetPaths = []string{}
 		for _, d := range dateRange {
-			targetPaths = append(targetPaths, internal.DayPath(d, cfg.DiaryDir))
+			targetPaths = append(targetPaths, internal.DayPath(d, workspace))
 		}
 
 		// Show all list
-		all := internal.FilterMarkdown(internal.Walk(cfg.DiaryDir))
+		all := internal.FilterMarkdown(internal.Walk(workspace))
 
 		// Show filtering list
 		for _, p := range all {
@@ -63,7 +72,7 @@ func GrepAction(c *cli.Context) error {
 			}
 		}
 	} else {
-		files = internal.Walk(cfg.DiaryDir)
+		files = internal.Walk(workspace)
 	}
 
 	if len(files) == 0 {
@@ -74,14 +83,3 @@ func GrepAction(c *cli.Context) error {
 
 	return internal.GrepFiles(cfg.GrepCmd, c.Args().First(), files...)
 }
-
-// func filterMarkdown(files []string) []string {
-// 	var newfiles []string
-// 	for _, file := range files {
-// 		if strings.HasSuffix(file, ".md") {
-// 			newfiles = append(newfiles, file)
-// 		}
-// 	}
-// 	sort.Sort(sort.Reverse(sort.StringSlice(newfiles)))
-// 	return newfiles
-// }

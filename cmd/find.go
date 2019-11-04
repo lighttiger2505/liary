@@ -35,7 +35,17 @@ func FindAction(c *cli.Context) error {
 		return err
 	}
 
-	p, err := fuzzyFindDiary(c, cfg.DiaryDir)
+	workspace := cfg.DiaryDir
+	workspaceFlag := c.GlobalString("workspace")
+	if workspaceFlag != "" {
+		w, err := cfg.GetWorkSpace(workspaceFlag)
+		if err != nil {
+			return err
+		}
+		workspace = w
+	}
+
+	p, err := fuzzyFindDiary(c, workspace)
 	if err != nil {
 		return err
 	}
