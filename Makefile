@@ -13,11 +13,11 @@ test:
 
 .PHONY: build
 build: $(SRCS)
-	export GO111MODULE=on;go build $(LDFLAGS) ./...
+	go build $(LDFLAGS) ./...
 
 .PHONY: install
 install: $(SRCS)
-	export GO111MODULE=on;go install $(LDFLAGS) ./...
+	go install $(LDFLAGS) ./...
 
 .PHONY: coverage
 coverage:
