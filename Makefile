@@ -19,6 +19,10 @@ build: $(SRCS)
 install: $(SRCS)
 	go install $(LDFLAGS) ./...
 
+.PHONY: lint
+lint:
+	golangci-lint run
+
 .PHONY: coverage
 coverage:
 	go test -v -coverprofile=coverage.out ./...
