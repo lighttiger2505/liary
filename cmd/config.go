@@ -79,7 +79,9 @@ func ConfigAction(c *cli.Context) error {
 		return nil
 	}
 
-	internal.OpenEditor(cfg.Editor, cfg.Path())
+	if err := internal.OpenEditor(cfg.Editor, cfg.Path()); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -119,7 +121,9 @@ func eachField(depth int, s interface{}, fn EachFunc) error {
 		vv := v.FieldByName(f.Name)
 		fn(depth, f.Name, vv, k)
 		if k == reflect.Struct {
-			eachField(depth+1, vv, fn)
+			if err := eachField(depth+1, vv, fn); err != nil {
+				return err
+			}
 		}
 	}
 	return nil

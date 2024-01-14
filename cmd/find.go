@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"errors"
-	"io/ioutil"
+	"io"
 	"os"
 	"path/filepath"
 
@@ -82,7 +82,7 @@ func fuzzyFindDiary(c *cli.Context, workspace string) (string, error) {
 			}
 			defer f.Close()
 
-			b, err := ioutil.ReadAll(f)
+			b, err := io.ReadAll(f)
 			if err != nil {
 				return "read error..."
 			}

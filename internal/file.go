@@ -2,7 +2,6 @@ package internal
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"sort"
@@ -16,7 +15,7 @@ func IsFileExist(fPath string) bool {
 
 func MakeFile(fPath string) error {
 	if !IsFileExist(fPath) {
-		err := ioutil.WriteFile(fPath, []byte(""), 0644)
+		err := os.WriteFile(fPath, []byte(""), 0644)
 		if err != nil {
 			return fmt.Errorf("Failed make diary file. %v", err.Error())
 		}
@@ -50,7 +49,7 @@ func getXDGConfigPath(goos string) string {
 }
 
 func Walk(dir string) []string {
-	files, err := ioutil.ReadDir(dir)
+	files, err := os.ReadDir(dir)
 	if err != nil {
 		panic(err)
 	}

@@ -46,7 +46,6 @@ func GrepAction(c *cli.Context) error {
 	// Relative Range
 	files := []string{}
 	if c.String("range") != "" {
-		targetPaths := []string{}
 		year, month, day, err := internal.ParseDate(c.String("range"))
 		if err != nil {
 			return err
@@ -55,7 +54,7 @@ func GrepAction(c *cli.Context) error {
 		start := now.AddDate(-1*year, -1*month, -1*day)
 		dateRange := internal.GetDateRange(start, now)
 
-		targetPaths = []string{}
+		targetPaths := []string{}
 		for _, d := range dateRange {
 			targetPaths = append(targetPaths, internal.DayPath(d, workspace))
 		}

@@ -2,7 +2,7 @@ package internal
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"os"
 	"os/exec"
 	"runtime"
@@ -20,7 +20,7 @@ func GetAppendValue(args []string) (string, error) {
 			val = ""
 		}
 	} else {
-		b, err := ioutil.ReadAll(os.Stdin)
+		b, err := io.ReadAll(os.Stdin)
 		if err != nil {
 			return "", fmt.Errorf("Failed make diary file. %s", err.Error())
 		}

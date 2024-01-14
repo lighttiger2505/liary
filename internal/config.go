@@ -3,7 +3,6 @@ package internal
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -51,7 +50,7 @@ func (c *Config) Read() (string, error) {
 	}
 	defer file.Close()
 
-	b, err := ioutil.ReadAll(file)
+	b, err := io.ReadAll(file)
 	if err != nil {
 		return "", fmt.Errorf("cannot read config, %s", err)
 	}
@@ -76,7 +75,7 @@ func (c *Config) Load() error {
 	}
 	defer file.Close()
 
-	b, err := ioutil.ReadAll(file)
+	b, err := io.ReadAll(file)
 	if err != nil {
 		return fmt.Errorf("cannot read config, %s", err)
 	}
@@ -162,6 +161,8 @@ func createNewConfig() error {
 
 	cfg.GrepCmd = "grep -nH ${PATTERN} ${FILES}"
 
-	cfg.Save()
+	if err := cfg.Save(); err != nil {
+		return err
+	}
 	return nil
 }
