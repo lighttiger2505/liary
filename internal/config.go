@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"strings"
 
 	yaml "gopkg.in/yaml.v2"
 )
@@ -83,6 +84,13 @@ func (c *Config) Load() error {
 	if err = yaml.Unmarshal(b, c); err != nil {
 		return fmt.Errorf("failed unmarshal yaml. \nError: %s \nBuffer: %s", err, string(b))
 	}
+
+	// Expand home directory in paths
+	c.DiaryDir = expandHomePath(c.DiaryDir)
+	for name, path := range c.WorkSpaces {
+		c.WorkSpaces[name] = expandHomePath(path)
+	}
+
 	return nil
 }
 
@@ -134,7 +142,13 @@ func (c *Config) Save() error {
 }
 
 func newConfig() *Config {
-	cfg := &Config{}
+	cfg := &Config{
+		DiaryDir:      "",
+		Editor:        "vim",
+		EditorOptions: []string{},
+		WorkSpaces:    map[string]string{},
+		GrepCmd:       "",
+	}
 	return cfg
 }
 
@@ -165,4 +179,32 @@ func createNewConfig() error {
 		return err
 	}
 	return nil
+}
+
+// expandHomePath expands ~ and $HOME in file paths
+func expandHomePath(path string) string {
+	if path == "" {
+		return path
+	}
+
+	// Handle ~ at the beginning
+	if strings.HasPrefix(path, "~/") {
+		homeDir, err := os.UserHomeDir()
+		if err != nil {
+			return path // Return original path if error
+		}
+		return filepath.Join(homeDir, path[2:])
+	}
+
+	// Handle exact ~ (home directory itself)
+	if path == "~" {
+		homeDir, err := os.UserHomeDir()
+		if err != nil {
+			return path // Return original path if error
+		}
+		return homeDir
+	}
+
+	// Expand environment variables including $HOME
+	return os.ExpandEnv(path)
 }
