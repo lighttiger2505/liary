@@ -32,6 +32,10 @@ var EditCommand = cli.Command{
 			Name:  "after, a",
 			Usage: "Open specified after diary by day",
 		},
+		cli.BoolFlag{
+			Name:  "path, p",
+			Usage: "Print diary file path",
+		},
 	},
 }
 
@@ -71,6 +75,12 @@ func EditAction(c *cli.Context) error {
 	targetDirPath := filepath.Dir(targetPath)
 	if err := internal.MakeDir(targetDirPath); err != nil {
 		return err
+	}
+
+	pathFlag := c.Bool("path")
+	if pathFlag {
+		fmt.Println(targetPath)
+		return nil
 	}
 
 	cmdArgs := []string{}
