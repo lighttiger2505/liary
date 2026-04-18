@@ -97,7 +97,7 @@ func toReflectValue(i interface{}) (reflect.Value, error) {
 	case reflect.Struct:
 		return v, nil
 	default:
-		return v, errors.New("Not a struct")
+		return v, errors.New("not a struct")
 	}
 }
 

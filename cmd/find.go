@@ -80,7 +80,7 @@ func fuzzyFindDiary(c *cli.Context, workspace string) (string, error) {
 			if err != nil {
 				return "file open error..."
 			}
-			defer f.Close()
+			defer func() { _ = f.Close() }()
 
 			b, err := io.ReadAll(f)
 			if err != nil {
