@@ -25,7 +25,7 @@ var GrepCommand = cli.Command{
 
 func GrepAction(c *cli.Context) error {
 	if len(c.Args()) == 0 {
-		return errors.New("The required arguments were not provided: <pattern>")
+		return errors.New("the required arguments were not provided: <pattern>")
 	}
 
 	cfg, err := internal.GetConfig()
@@ -75,7 +75,7 @@ func GrepAction(c *cli.Context) error {
 	}
 
 	if len(files) == 0 {
-		return errors.New("Not found diary file")
+		return errors.New("not found diary file")
 	}
 
 	files = internal.FilterMarkdown(files)

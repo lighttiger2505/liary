@@ -17,7 +17,7 @@ func MakeFile(fPath string) error {
 	if !IsFileExist(fPath) {
 		err := os.WriteFile(fPath, []byte(""), 0644)
 		if err != nil {
-			return fmt.Errorf("Failed make diary file. %v", err.Error())
+			return fmt.Errorf("failed to make diary file: %v", err.Error())
 		}
 	}
 	return nil
@@ -26,7 +26,7 @@ func MakeFile(fPath string) error {
 func MakeDir(dPath string) error {
 	if !IsFileExist(dPath) {
 		if err := os.MkdirAll(dPath, 0755); err != nil {
-			return fmt.Errorf("Failed make diary dir. %s", err.Error())
+			return fmt.Errorf("failed to make diary dir: %s", err.Error())
 		}
 	}
 	return nil

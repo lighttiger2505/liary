@@ -49,7 +49,7 @@ func (c *Config) Read() (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("cannot open config, %s", err)
 	}
-	defer file.Close()
+	defer func() { _ = file.Close() }()
 
 	b, err := io.ReadAll(file)
 	if err != nil {
@@ -74,7 +74,7 @@ func (c *Config) Load() error {
 	if err != nil {
 		return fmt.Errorf("cannot open config, %s", err)
 	}
-	defer file.Close()
+	defer func() { _ = file.Close() }()
 
 	b, err := io.ReadAll(file)
 	if err != nil {
@@ -96,47 +96,51 @@ func (c *Config) Load() error {
 
 func (c *Config) GetWorkSpace(name string) (string, error) {
 	if len(c.WorkSpaces) == 0 {
-		return "", fmt.Errorf("Not set workspace")
+		return "", fmt.Errorf("not set workspace")
 	}
 
 	workspace, ok := c.WorkSpaces[name]
 	if !ok {
-		return "", fmt.Errorf("Not found workspace, %s", name)
+		return "", fmt.Errorf("not found workspace: %s", name)
 	}
 	if !IsFileExist(workspace) {
-		return "", fmt.Errorf("No such directory, %s", workspace)
+		return "", fmt.Errorf("no such directory: %s", workspace)
 	}
 
 	f, err := os.Open(workspace)
 	if err != nil {
 		return "", err
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 	fs, err := os.Stat(workspace)
 	if err != nil {
 		return "", err
 	}
 	if !fs.IsDir() {
-		return "", fmt.Errorf("Workspace not directory, %s", workspace)
+		return "", fmt.Errorf("workspace not directory: %s", workspace)
 	}
 
 	return workspace, nil
 }
 
-func (c *Config) Save() error {
+func (c *Config) Save() (err error) {
 	file, err := os.OpenFile(configFilePath, os.O_WRONLY, 0666)
 	if err != nil {
 		return fmt.Errorf("cannot open file, %s", err)
 	}
-	defer file.Close()
+	defer func() {
+		if cerr := file.Close(); cerr != nil && err == nil {
+			err = cerr
+		}
+	}()
 
 	out, err := yaml.Marshal(c)
 	if err != nil {
-		return fmt.Errorf("Failed marshal config. Error: %v", err)
+		return fmt.Errorf("failed to marshal config: %v", err)
 	}
 
-	if _, err = io.WriteString(file, string(out)); err != nil {
-		return fmt.Errorf("Failed write config file. Error: %s", err)
+	if _, err = file.Write(out); err != nil {
+		return fmt.Errorf("failed to write config file: %s", err)
 	}
 	return nil
 }

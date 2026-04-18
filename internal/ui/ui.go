@@ -64,7 +64,7 @@ func Ask(query string) (string, error) {
 	case <-sigCh:
 		// Print a newline so that any further output starts properly
 		// on a new line.
-		fmt.Fprintln(os.Stdout)
+		_, _ = fmt.Fprintln(os.Stdout)
 		return "", errors.New("interrupted")
 	}
 }

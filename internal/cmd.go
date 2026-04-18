@@ -22,7 +22,7 @@ func GetAppendValue(args []string) (string, error) {
 	} else {
 		b, err := io.ReadAll(os.Stdin)
 		if err != nil {
-			return "", fmt.Errorf("Failed make diary file. %s", err.Error())
+			return "", fmt.Errorf("failed to read stdin: %s", err.Error())
 		}
 		val = string(b)
 	}

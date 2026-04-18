@@ -72,7 +72,7 @@ func ParseDate(s string) (int, int, int, error) {
 		var err error
 
 		// The next character must be [0-9]
-		if !('0' <= s[0] && s[0] <= '9') {
+		if s[0] < '0' || s[0] > '9' {
 			return 0, 0, 0, errors.New("invalid date " + orig)
 		}
 
